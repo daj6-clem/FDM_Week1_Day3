@@ -1,0 +1,6 @@
+id,question,category,reason,missing_context
+1,How many open complaints does customer C0001 have?,SQL,Does not require any searching through policy.,
+2,What is the escalation rule for a disputed card transaction?,RAG,This is company policy and requires that the AI search through the rulebook.,Different disputed card transactions will have different rules.
+3,Show customer history and explain the fee policy.,hybrid,"The fee policy requires RAG as it is company policy, but customer history is in the database and can be retrieved with a query","Which customer's history, what kind of history, what kind of fee?"
+4,What is average closure time by category?,SQL,This can be calculated with an SQL query.,
+5,Should this high-risk case be approved automatically?,human decision,"The question will be posed by the AI Agent, but it is always a human that does the approval, especially on higher risk cases.",
