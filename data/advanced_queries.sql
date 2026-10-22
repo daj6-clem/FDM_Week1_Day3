@@ -1,3 +1,6 @@
+--INSERTS FOR TESTING PURPOSES:
+
+
 -- Use CASE for unresolved 0-7, 8-30, and 31+ day groups
 --	Test exact boundary dates
 INSERT INTO complaint_status_history(complaint_id,old_status,new_status,changed_by,comments)
@@ -9,6 +12,12 @@ INSERT INTO complaint(complaint_id, customer_id, account_id, channel, category, 
 VALUES
 ('CMP013','CUS013', 'ACC013', 'Email', 'Fee Dispute', 'Monthly fee charged incorrectly', 'High', 'OPEN', '2026-10-21 10:25:07', 'EMP002'),
 ('CMP014','CUS014', 'ACC014', 'Email', 'Fee Dispute', 'Monthly fee charged incorrectly', 'High', 'OPEN', '2026-10-01 10:25:07', 'EMP002');
+
+INSERT INTO complaint(complaint_id, customer_id, account_id, channel, category, complaint_text, priority, status, received_at, assigned_analyst_id)
+VALUES
+('CMP017','CUS001', 'ACC017', 'Email', 'Fee Dispute', 'Monthly fee charged incorrectly', 'High', 'OPEN', '2026-10-21 10:25:07', 'EMP002'),
+('CMP018','CUS001', 'ACC018', 'Email', 'Fee Dispute', 'Monthly fee charged incorrectly', 'High', 'OPEN', '2026-10-01 10:25:07', 'EMP002');
+
 
 SELECT c.complaint_id, CAST(julianday(csh.changed_at) - julianday(c.received_at) AS INTEGER) AS age_in_days,
 CASE
@@ -24,11 +33,6 @@ WHERE status <> 'CLOSED';
 -- Use a CTE to identify repeat complainants and escalation context
 --	Name CTEs by business purpose
 --	Keep stages readable
-INSERT INTO complaint(complaint_id, customer_id, account_id, channel, category, complaint_text, priority, status, received_at, assigned_analyst_id)
-VALUES
-('CMP013','CUS001', 'ACC013', 'Email', 'Fee Dispute', 'Monthly fee charged incorrectly', 'High', 'OPEN', '2026-10-21 10:25:07', 'EMP002'),
-('CMP014','CUS001', 'ACC014', 'Email', 'Fee Dispute', 'Monthly fee charged incorrectly', 'High', 'OPEN', '2026-10-01 10:25:07', 'EMP002');
-
 
 -- Stage 1: Identify repeat complainants
 WITH repeat_complainants AS (
@@ -44,7 +48,7 @@ ON complaint.customer_id = repeat_complainants.customer_id;
 
 
 -- Use ROW_NUMBER to select latest status per complaint
---	Select latest status and rank customers by complaint count
+--	Select latest status
 --	Explain PARTITION BY and ORDER BY
 
 -- Step 1: rank statuses
