@@ -1,0 +1,50 @@
+
+10-26-2026
+NOTES ON:
+complaint/customer/account_respositories, database_manager, and test_repositories
+
+Configuration:
+    .env is for SQLite
+
+    database_manager:
+    - contains class ConnectionManager which creates connections, closes connections, commits things, and does rollbacks.
+    - The repositories take open connections as inputs and then perform ConnectionManager functions inside their own functions
+    - connections should be closed once the repositories are no longer in use
+
+    customer_repository:
+    - Contains class CustomerRepository which initializes with a ConnectionManager attached
+    - Contains requisite function get_by_id which opens a cursor, performs a SELECT for the given customer ID, and closes the cursor
+    - also contains a vestigial get_all function that was included for practice
+
+    account_repository:
+    - Contains class AccountRepository which initializes with a ConnectionManager attached
+    - contains requisite function get_for_customer which performs a select on the Account table for the given Customer ID and closes the cursor
+    - also contains a get_all function that was included for practice
+
+    complaint_repository:
+    - Contains Class ComplaintRepository which initializes with a ConnectionManager attached
+    - contains requisite get_for_customer which performs a select on the complaint table for the given customerID and closes the cursor
+    - contains requisite get_by_id function which performs a select on the complaint table for the given complaintID and closes the cursor
+    - contains requisite create function which performs an INSERT on the complaint table, requiring a value for every COMPLAINT table field, and then commits the changes, or rolls back in the event of an exception
+    - also contains vestigial get_all function that was included for practice
+Responsibilities:
+    database_manager: opening/closing connections, commits, rollbacks
+    customer_repository: Does selects to find customer information from customer ID
+    account_repository: Does selects to find account information from customer ID
+    complaint repository: Does selects to find complaint information from complaint ID, does selects to find complaint information from customer ID, can insert complaints to complaint table
+    
+Example calls:
+    connection = ConnectionManager()
+
+    customer = CustomerRepository(connection)
+    account = AccountRepository(connection)
+    complaint = ComplaintRepository(connection)
+
+    cus_id = "CUS001"
+    cmp_id = "CMP001"
+
+    result = customer.get_by_id(cus_id)
+    result = account.get_for_customer(cus_id)
+    result = complaint.get_for_customer(cus_id)
+    result = complaint.get_by_id(cmp_id)
+    complaint.create("CMP001", "CUS001", "ACC001", "Phone", "Service Delay", "Delay in account update", "Medium", "OPEN", "2025-01-01", "EMP001")
