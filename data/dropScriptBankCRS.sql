@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS account;
+DROP TABLE IF EXISTS audit_log;
+DROP TABLE IF EXISTS complaint;
+DROP TABLE IF EXISTS complaint_status_history;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS customer_response;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS fee;
+DROP TABLE IF EXISTS investigation;
+DROP TABLE IF EXISTS policy_document;
+DROP TABLE IF EXISTS policy_section;
+DROP TABLE IF EXISTS recommendation;
+DROP TABLE IF EXISTS review_request;
+DROP TABLE IF EXISTS review_decision;
+DROP TABLE IF EXISTS service_request;
+DROP TABLE IF EXISTS transactions;

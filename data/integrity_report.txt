@@ -1,0 +1,44 @@
+Run Counts and Orphan Checks
+Compare source and inserted counts
+Check optional account/customer consistency
+
+
+THEORETICAL ROW COUNTS
+Account: 10
+Audit_log:
+Complaint: 30
+Complaint Status History: 31
+Customer: 10
+Customer Response: 10
+Employee: 10
+Fee: 10
+Investigation: 10
+Policy Document: 10
+Policy Section: 10
+Recommendation: 10
+Review Decision: 10
+Review Request: 10
+Service Request: 10
+Transactions: 10
+
+ACTUAL ROW COUNTS:
+Account: 10
+Audit_log:
+Complaint: 30
+Complaint Status History: 31
+Customer: 10
+Customer Response: 10
+Employee: 10
+Fee: 10
+Investigation: 10
+Policy Document: 10
+Policy Section: 10
+Recommendation: 10
+Review Decision: 10
+Review Request: 10
+Service Request: 10
+Transactions: 10
+
+Orphan Checks: There are no orphan accounts
+
+All accounts belong to customers.

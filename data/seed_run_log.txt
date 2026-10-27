@@ -1,0 +1,10 @@
+
+INTIALIZE DATABASE:
+Drop all the tables, recreate them, and do your inserts
+
+Log Each Stage
+Avoid Accidental Reset without Explicit Option
+
+Two separate scripts, one is dropScriptBankCRS.sql, the other is database_schema.sql
+database_schema.sql creates all the tables in this order: Employee -> Customer -> Account -> Complaint -> Complaint Status History -> Transactions -> Fee -> Service Request -> Policy Document -> Policy Section -> Investigation -> Recommendation -> Review Request -> Review Decision -> Customer Response -> Audit Log
+All were successful

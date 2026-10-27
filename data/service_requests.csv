@@ -1,0 +1,61 @@
+request_id,complaint_id,customer_id,request_type,status,created_date
+SR00001,CP00048,C0086,Manager Callback,Completed,2026-03-12
+SR00002,CP00104,C0069,Transaction Investigation,Completed,2026-06-13
+SR00003,CP00058,C0039,Transaction Investigation,In Progress,2026-03-13
+SR00004,CP00009,C0080,Transaction Investigation,Completed,2026-01-25
+SR00005,CP00034,C0059,Transaction Investigation,Open,2026-07-09
+SR00006,CP00024,C0063,Fee Review,Open,2026-07-10
+SR00007,CP00017,C0096,Manager Callback,In Progress,2026-06-24
+SR00008,CP00027,C0016,Fee Review,In Progress,2026-01-28
+SR00009,CP00020,C0076,Fee Review,In Progress,2026-03-31
+SR00010,CP00024,C0063,Access Reset,Open,2026-01-03
+SR00011,CP00052,C0073,Manager Callback,Open,2026-04-14
+SR00012,CP00013,C0079,Transaction Investigation,Completed,2026-08-04
+SR00013,CP00098,C0092,Fee Review,Open,2026-08-14
+SR00014,CP00023,C0064,Transaction Investigation,Open,2026-07-13
+SR00015,CP00076,C0016,Document Request,Completed,2026-03-24
+SR00016,CP00056,C0006,Access Reset,Open,2026-05-08
+SR00017,CP00053,C0090,Fee Review,In Progress,2026-01-18
+SR00018,CP00087,C0050,Access Reset,In Progress,2026-08-14
+SR00019,CP00024,C0063,Transaction Investigation,Completed,2026-01-03
+SR00020,CP00019,C0005,Access Reset,Completed,2026-01-15
+SR00021,CP00028,C0014,Manager Callback,Completed,2026-03-30
+SR00022,CP00114,C0079,Access Reset,Completed,2026-06-10
+SR00023,CP00055,C0085,Manager Callback,Completed,2026-08-25
+SR00024,CP00015,C0054,Document Request,Completed,2026-06-26
+SR00025,CP00096,C0058,Access Reset,In Progress,2026-06-20
+SR00026,CP00060,C0044,Access Reset,In Progress,2026-05-09
+SR00027,CP00030,C0016,Access Reset,Completed,2026-05-19
+SR00028,CP00074,C0028,Document Request,Completed,2026-08-24
+SR00029,CP00005,C0087,Manager Callback,Completed,2026-04-26
+SR00030,CP00058,C0039,Transaction Investigation,Completed,2026-01-12
+SR00031,CP00077,C0051,Document Request,In Progress,2026-02-08
+SR00032,CP00069,C0099,Access Reset,In Progress,2026-03-07
+SR00033,CP00095,C0095,Manager Callback,In Progress,2026-02-18
+SR00034,CP00095,C0095,Access Reset,Completed,2026-04-13
+SR00035,CP00007,C0016,Fee Review,In Progress,2026-01-29
+SR00036,CP00030,C0016,Fee Review,Completed,2026-07-22
+SR00037,CP00019,C0005,Document Request,Open,2026-05-11
+SR00038,CP00033,C0058,Transaction Investigation,Open,2026-02-17
+SR00039,CP00112,C0018,Document Request,Completed,2026-03-29
+SR00040,CP00033,C0058,Manager Callback,In Progress,2026-04-27
+SR00041,CP00027,C0016,Manager Callback,Open,2026-08-10
+SR00042,CP00055,C0085,Fee Review,In Progress,2026-03-13
+SR00043,CP00083,C0010,Fee Review,Open,2026-01-28
+SR00044,CP00072,C0093,Access Reset,In Progress,2026-08-13
+SR00045,CP00031,C0074,Document Request,In Progress,2026-08-07
+SR00046,CP00008,C0027,Manager Callback,Open,2026-07-23
+SR00047,CP00020,C0076,Transaction Investigation,Open,2026-01-26
+SR00048,CP00043,C0033,Document Request,In Progress,2026-08-10
+SR00049,CP00029,C0086,Transaction Investigation,Open,2026-04-17
+SR00050,CP00024,C0063,Manager Callback,In Progress,2026-01-08
+SR00051,CP00109,C0003,Manager Callback,In Progress,2026-08-19
+SR00052,CP00063,C0021,Document Request,Open,2026-06-16
+SR00053,CP00027,C0016,Manager Callback,Completed,2026-03-22
+SR00054,CP00113,C0045,Fee Review,Completed,2026-06-21
+SR00055,CP00056,C0006,Access Reset,Open,2026-07-29
+SR00056,CP00044,C0036,Transaction Investigation,Completed,2026-03-13
+SR00057,CP00085,C0004,Manager Callback,Open,2026-06-27
+SR00058,CP00027,C0016,Fee Review,Open,2026-02-13
+SR00059,CP00089,C0034,Manager Callback,In Progress,2026-01-11
+SR00060,CP00017,C0096,Transaction Investigation,Open,2026-03-08
