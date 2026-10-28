@@ -2,9 +2,9 @@ import sqlite3
 import os
 import sys
 from data.database_manager import ConnectionManager
-from data.complaint_repository import ComplaintRepository
-from data.customer_repository import CustomerRepository
-from data.account_repository import AccountRepository
+from data.repositories.complaint_repository import ComplaintRepository
+from data.repositories.customer_repository import CustomerRepository
+from data.repositories.account_repository import AccountRepository
 
 # REPOSITORY FUNCTIONS TO TEST:
 # Test valid, missing, and failure cases

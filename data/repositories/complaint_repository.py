@@ -35,6 +35,20 @@ class ComplaintRepository:
         finally:
             cursor.close()
 
+    def get_complaints(self):
+        conn = self.connection_manager.connect()
+
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "SELECT * FROM complaint",
+            )
+
+            return cursor.fetchall()
+        finally:
+            cursor.close
+
     def create(self, complaint_id, customer_id, account_id, channel, category, complaint_text, priority, status, received_at, assigned_analyst_id):
         conn = self.connection_manager.connect()
 
@@ -59,12 +73,5 @@ class ComplaintRepository:
                 """,
                 (complaint_id, customer_id, account_id, channel, category, complaint_text, priority, status, received_at, assigned_analyst_id)
             )
-
-            self.connection_manager.commit()
-
-        except Exception:
-            self.connection_manager.rollback()
-            raise
-
         finally:
             cursor.close()

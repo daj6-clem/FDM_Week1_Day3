@@ -1,5 +1,6 @@
 from enum import Enum
 import re
+import datetime
 
 # ENUMS:
 class Segment(Enum):
@@ -107,6 +108,15 @@ class Complaint:
 
 
     def __init__(self, complaint_id, customer_id, account_id, channel, category, complaint_text, priority, status, received_at, assigned_analyst):
+        # Not Null: Customer, channel, category, complaint_text, status, received_at
+        # Nullable: account_id, priority, assigned_analyst_id
+        if not isinstance(customer_id, str) or not customer_id:
+            raise ValueError("Customer ID must be a non-empty string")
+        if not isinstance(complaint_text, str) or not complaint_text:
+            raise ValueError("Complaint text must be a non-empty string")
+        if not isinstance(received_at, datetime):
+            raise ValueError("Received at must be a datetime")
+
         if not re.match(r"^CMP\d{3}$", complaint_id):
             raise ValueError("Complaint ID must be in the form CMP###")
         if not isinstance(status, ComplaintStatus):
@@ -117,8 +127,6 @@ class Complaint:
             raise ValueError("Invalid Complaint Priority")
         if not isinstance(category, Category):
             raise ValueError("Invalid Complaint Category")
-        if not complaint_text.strip():
-            raise ValueError("Complaint Text Cannot Be Empty")
         
         self.complaint_id = complaint_id
         self.customer_id = customer_id
