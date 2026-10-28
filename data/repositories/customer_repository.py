@@ -1,33 +1,19 @@
-from data.database_manager import ConnectionManager
-import sqlite3
+from src.models.models import Customer
 
 class CustomerRepository:
-    def __init__(self, connection_manager):
-        self.connection_manager = connection_manager
+    def __init__(self, session_factory):
+        self.session_factory = session_factory
 
     def get_by_id(self, customer_id):
-        conn = self.connection_manager.connect()
-
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                "SELECT * FROM customer WHERE customer_id = ?",
-                (customer_id,)
+        with self.session_factory() as session:
+            return (
+                session.query(Customer)
+                .filter(Customer.customer_id == customer_id)
+                .first()
             )
-
-            return cursor.fetchone()
-        finally:
-            cursor.close()
 
     def get_all(self):
-        conn = self.connection_manager.connect()
-
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                "SELECT * FROM customer"
+        with self.session_factory() as session:
+            return (
+                session.query(Customer).all()
             )
-
-            return cursor.fetchall()
-        finally:
-            cursor.close()

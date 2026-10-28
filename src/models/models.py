@@ -1,6 +1,12 @@
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Integer
+from sqlalchemy import Enum as SqlEnum
 from enum import Enum
-import re
+from sqlalchemy.orm import relationship
 import datetime
+
+class Base(DeclarativeBase):
+    pass
 
 # ENUMS:
 class Segment(Enum):
@@ -45,43 +51,32 @@ class Category(Enum):
     FRAUD_CLAIM = "Fraud Claim"
 
 
-class Customer:
-    def __init__(self, customer_id, first_name, last_name, email, phone_number, segment, date_created):
-        if not re.match(r"^CUS\d{3}$", customer_id):
-            raise ValueError("Customer ID must be in the form CUS###")
-        digits = ''.join(filter(str.isdigit, phone_number))
-        if len(digits) != 10:
-            raise ValueError("Phone number must contain 10 digits")
-        if not isinstance(segment, Segment):
-            raise ValueError("Invalid Segment")
-        self.customer_id = customer_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.phone_number = phone_number
-        self.segment = segment
-        self.date_created = date_created
+class Customer (Base):
+    __tablename__ = "customer"
 
-class Account:
+    customer_id = Column(String, primary_key = True)
+    first_name = Column(String, nullable = False)
+    last_name = Column(String, nullable = False)
+    email = Column(String, unique = True)
+    phone_number = Column(String, nullable = True)
+    segment = Column(SqlEnum(Segment), nullable = True)
+    date_created = Column(DateTime, default = datetime.datetime.utcnow, nullable = True)
+
+class Account (Base):
+    __tablename__ = "account"
+
+    account_id = Column(String, primary_key = True)
+    customer_id = Column(String, ForeignKey("customer.customer_id"), nullable = False)
+    account_number = Column(String, unique = True, nullable = False)
+    account_type = Column(SqlEnum(AccountType), nullable = False)
+    status = Column(SqlEnum(AccountStatus), nullable = False)
+    current_balance = Column(Float, default = 0, nullable = True)
+    opened_date = Column(DateTime, nullable = False)
+
     VALID_TRANSITIONS = {
-        AccountStatus.ACTIVE: [AccountStatus.INACTIVE],
-        AccountStatus.INACTIVE: [AccountStatus.ACTIVE]
+    AccountStatus.ACTIVE: [AccountStatus.INACTIVE],
+    AccountStatus.INACTIVE: [AccountStatus.ACTIVE]
     }
-
-    def __init__(self, account_id, customer_id, account_number, account_type, status, current_balance, opened_date):
-        if not re.match(r"^ACC\d{3}$", account_id):
-            raise ValueError("Account ID must be in the form ACC###")
-        if not isinstance(account_type, AccountType):
-            raise ValueError("Invalid Account Type")
-        if not isinstance(status, AccountStatus):
-            raise ValueError("Invalid Account Status")
-        self.account_id = account_id
-        self.customer_id = customer_id
-        self.account_number = account_number
-        self.account_type = account_type
-        self.status = status
-        self.current_balance = current_balance
-        self.opened_date = opened_date
 
     def change_status(self, new_status):
         allowed = self.VALID_TRANSITIONS[self.status]
@@ -91,7 +86,20 @@ class Account:
                              )
         self.status = new_status
 
-class Complaint:
+class Complaint (Base):
+    __tablename__ = "complaint"
+
+    complaint_id = Column(String, primary_key = True)
+    customer_id = Column(String, ForeignKey("customer.customer_id"), nullable = False)
+    account_id = Column(String, ForeignKey("account.account_id"), nullable = True)
+    channel = Column(SqlEnum(Channel), nullable = False)
+    category = Column(SqlEnum(Category), nullable = False)
+    complaint_text = Column(String, nullable = False)
+    priority = Column(SqlEnum(Priority), nullable = True)
+    status = Column(SqlEnum(ComplaintStatus), nullable = False)
+    received_at = Column(DateTime, nullable = False)
+    assigned_analyst_id = Column(String, ForeignKey("employee.employee_id"), nullable = True)
+
     VALID_TRANSITIONS = {
         ComplaintStatus.OPEN: [
             ComplaintStatus.IN_PROGRESS
@@ -106,39 +114,6 @@ class Complaint:
         ComplaintStatus.CLOSED: []
     }
 
-
-    def __init__(self, complaint_id, customer_id, account_id, channel, category, complaint_text, priority, status, received_at, assigned_analyst):
-        # Not Null: Customer, channel, category, complaint_text, status, received_at
-        # Nullable: account_id, priority, assigned_analyst_id
-        if not isinstance(customer_id, str) or not customer_id:
-            raise ValueError("Customer ID must be a non-empty string")
-        if not isinstance(complaint_text, str) or not complaint_text:
-            raise ValueError("Complaint text must be a non-empty string")
-        if not isinstance(received_at, datetime):
-            raise ValueError("Received at must be a datetime")
-
-        if not re.match(r"^CMP\d{3}$", complaint_id):
-            raise ValueError("Complaint ID must be in the form CMP###")
-        if not isinstance(status, ComplaintStatus):
-            raise ValueError("Invalid Complaint Status")
-        if not isinstance(channel, Channel):
-            raise ValueError("Invalid Complaint Channel")
-        if not isinstance(priority, Priority):
-            raise ValueError("Invalid Complaint Priority")
-        if not isinstance(category, Category):
-            raise ValueError("Invalid Complaint Category")
-        
-        self.complaint_id = complaint_id
-        self.customer_id = customer_id
-        self.account_id = account_id
-        self.channel = channel
-        self.category = category
-        self.complaint_text = complaint_text
-        self.priority = priority
-        self.status = status
-        self.received_at = received_at
-        self.assigned_analyst = assigned_analyst
-
     def change_status(self, new_status):
         allowed = self.VALID_TRANSITIONS[self.status]
 
@@ -148,18 +123,13 @@ class Complaint:
                              )
         self.status = new_status
 
-class ComplaintStatusHistory:
-    def __init__(self, history_id, complaint_id, old_status, new_status, changed_by, changed_at, comments):
-        if old_status == new_status:
-            raise ValueError("Old and New status cannot be the same")
-        if not isinstance(old_status, ComplaintStatus):
-            raise ValueError("Invalid Old Complaint Status")
-        if not isinstance(new_status, ComplaintStatus):
-            raise ValueError("Invalid New Complaint Status")
-        self.history_id = history_id
-        self.complaint_id = complaint_id
-        self.old_status = old_status
-        self.new_status = new_status
-        self.changed_by = changed_by
-        self.changed_at = changed_at
-        self.comments = comments
+class ComplaintStatusHistory (Base):
+    __tablename__ = "complaint_status_history"
+
+    history_id = Column(Integer, primary_key = True, autoincrement=True)
+    complaint_id = Column(String, ForeignKey("complaint.complaint_id"), nullable = False)
+    old_status = Column(SqlEnum(ComplaintStatus), nullable = True)
+    new_status = Column(SqlEnum(ComplaintStatus), nullable = False)
+    changed_by = Column(String, ForeignKey("employee.employee_id"), nullable = True)
+    changed_at = Column(DateTime, default = datetime.datetime.utcnow, nullable = True)
+    comments = Column(String, nullable = True)
