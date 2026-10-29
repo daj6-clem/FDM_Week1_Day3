@@ -1,7 +1,10 @@
+10-29-2026
+venv\Scripts\activate to start virtual machine
+uvicorn app.main:app --reload to start app
+fastapi dev filename to start app in dev mode
+
 10-28-2026
 Can recreate my virtual environment with pip install -r requirements.txt
-
-
 
 
 10-26-2026

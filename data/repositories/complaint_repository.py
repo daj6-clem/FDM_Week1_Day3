@@ -17,9 +17,21 @@ class ComplaintRepository:
     def get_complaints(self, db:Session):
         return db.query(Complaint).all()
 
-    def create(self, db:Session, complaint_data):
+    def generate_complaint_id(self, db):
+        latest = (
+            db.query(Complaint)
+            .order_by(Complaint.complaint_id.desc())
+            .first()
+        )
+        if latest is None:
+            return "CMP001"
+
+        num = int(latest.complaint_id[3:])
+        return f"CMP{num+1:03d}"
+
+    def create(self, db:Session, complaint_data, complaint_id):
         complaint = Complaint(
-            complaint_id = complaint_data.complaint_id,
+            complaint_id = complaint_id,
             customer_id = complaint_data.customer_id,
             account_id = complaint_data.account_id,
             channel = complaint_data.channel,
@@ -33,6 +45,6 @@ class ComplaintRepository:
 
         db.add(complaint)
         db.commit()
-        db.refresh()
+        db.refresh(complaint)
 
         return complaint

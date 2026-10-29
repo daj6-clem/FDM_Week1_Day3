@@ -24,4 +24,7 @@ class ComplaintService:
         customer = self.customer_repo.get_by_id(db, complaint.customer_id)
         if customer is None:
             raise ValueError("Cannot create complaint: customer does not exist.")
-        return self.complaint_repo.create(db, complaint)
+
+        complaint_id = self.complaint_repo.generate_complaint_id(db)
+        
+        return self.complaint_repo.create(db, complaint, complaint_id)

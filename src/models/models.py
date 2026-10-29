@@ -130,3 +130,12 @@ class ComplaintStatusHistory (Base):
     changed_by = Column(String, ForeignKey("employee.employee_id"), nullable = True)
     changed_at = Column(DateTime, default = datetime.datetime.utcnow, nullable = True)
     comments = Column(String, nullable = True)
+
+class Employee (Base):
+    __tablename__ = "employee"
+
+    employee_id = Column(String, primary_key = True, autoincrement = True)
+    first_name = Column(String, nullable = False)
+    last_name = Column(String, nullable = False)
+    email = Column(String, unique = True)
+    role = Column(String, nullable = False)
