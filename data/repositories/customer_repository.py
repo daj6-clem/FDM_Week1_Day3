@@ -1,19 +1,12 @@
 from src.models.models import Customer
+from sqlalchemy.orm import Session
 
 class CustomerRepository:
-    def __init__(self, session_factory):
-        self.session_factory = session_factory
-
-    def get_by_id(self, customer_id):
-        with self.session_factory() as session:
-            return (
-                session.query(Customer)
+    def get_by_id(self, db:Session, customer_id):
+        return (db.query(Customer)
                 .filter(Customer.customer_id == customer_id)
                 .first()
-            )
+        )
 
-    def get_all(self):
-        with self.session_factory() as session:
-            return (
-                session.query(Customer).all()
-            )
+    def get_all(self, db:Session):
+        return (db.query(Customer).all())

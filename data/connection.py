@@ -9,7 +9,7 @@ db_path = os.getenv("DB_PATH")
 
 engine = create_engine(
     db_path,
-    echo=False
+    echo=True
 )
 
 SessionLocal = sessionmaker(
@@ -17,3 +17,10 @@ SessionLocal = sessionmaker(
     autoflush = False,
     bind = engine
 )
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

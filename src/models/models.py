@@ -1,12 +1,9 @@
-from sqlalchemy.orm import DeclarativeBase
+from data.base import Base
 from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Integer
 from sqlalchemy import Enum as SqlEnum
 from enum import Enum
 from sqlalchemy.orm import relationship
 import datetime
-
-class Base(DeclarativeBase):
-    pass
 
 # ENUMS:
 class Segment(Enum):
