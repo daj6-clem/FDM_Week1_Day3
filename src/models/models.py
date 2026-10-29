@@ -7,14 +7,14 @@ import datetime
 
 # ENUMS:
 class Segment(Enum):
-    RETAIL = "Retail"
-    PREMIER = "Premier"
-    BUSINESS = "Business"
+    Retail = "Retail"
+    Premier = "Premier"
+    Business = "Business"
 
 class AccountType(Enum):
-    CHEQUING = "Chequing"
-    SAVINGS = "Savings"
-    BUSINESS = "Business"
+    Chequing = "Chequing"
+    Savings = "Savings"
+    Business = "Business"
 
 class AccountStatus(Enum):
     ACTIVE = "Active"
@@ -27,16 +27,16 @@ class ComplaintStatus(Enum):
     CLOSED = "Closed"
 
 class Channel(Enum):
-    PHONE = "Phone"
-    EMAIL = "Email"
-    BRANCH = "Branch"
-    WEB = "Web"
+    Phone = "Phone"
+    Email = "Email"
+    Branch = "Branch"
+    Web = "Web"
 
 class Priority(Enum):
-    LOW = "Low"
-    MEDIUM = "Medium"
-    HIGH = "High"
-    CRITICAL = "Critical"
+    Low = "Low"
+    Medium = "Medium"
+    High = "High"
+    Critical = "Critical"
 
 class Category(Enum):
     FEE_DISPUTE = "Fee Dispute"
@@ -90,7 +90,7 @@ class Complaint (Base):
     customer_id = Column(String, ForeignKey("customer.customer_id"), nullable = False)
     account_id = Column(String, ForeignKey("account.account_id"), nullable = True)
     channel = Column(SqlEnum(Channel), nullable = False)
-    category = Column(SqlEnum(Category), nullable = False)
+    category = Column(SqlEnum(Category, values_callable=lambda enum_cls: [e.value for e in enum_cls]), nullable = False)
     complaint_text = Column(String, nullable = False)
     priority = Column(SqlEnum(Priority), nullable = True)
     status = Column(SqlEnum(ComplaintStatus), nullable = False)

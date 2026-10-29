@@ -1,4 +1,4 @@
-from models.models import Account
+from src.models.models import Account
 from sqlalchemy.orm import Session
 
 class AccountRepository:

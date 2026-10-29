@@ -1,4 +1,4 @@
-from models.models import Complaint
+from src.models.models import Complaint
 from sqlalchemy.orm import Session
 
 class ComplaintRepository:
