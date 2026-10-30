@@ -45,3 +45,11 @@ class ComplaintResponse(BaseModel):
     status:ComplaintStatus
     received_at:datetime
     assigned_analyst_id:str | None
+
+class ComplaintStatusHistoryCreate(BaseModel):
+    complaint_id:str
+    old_status:ComplaintStatus | None
+    new_status:ComplaintStatus
+    changed_by:str | None
+    changed_at:datetime | None
+    comments:str | None

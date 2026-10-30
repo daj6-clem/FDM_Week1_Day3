@@ -1,4 +1,4 @@
-from src.models.models import Complaint
+from src.models.models import Complaint, ComplaintStatus
 from sqlalchemy.orm import Session
 
 class ComplaintRepository:
@@ -44,6 +44,13 @@ class ComplaintRepository:
         )
 
         db.add(complaint)
+        db.commit()
+        db.refresh(complaint)
+
+        return complaint
+
+    def save_complaint(self, db:Session, complaint:Complaint):
+
         db.commit()
         db.refresh(complaint)
 

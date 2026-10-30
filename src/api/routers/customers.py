@@ -10,7 +10,12 @@ router = APIRouter()
 
 @router.get("/customers/{customer_id}")
 def get_by_id(customer_id:str, db:Session = Depends(get_db)):
-    return service.get_by_id(db, customer_id)
+    customer = service.get_by_id(db, customer_id)
+
+    if customer:
+        return customer
+    else:
+        raise HTTPException(status_code = 404, detail = f"No customer with id = {customer_id}.")
 
 @router.get("/customers")
 def get_customers(db:Session = Depends(get_db)):
