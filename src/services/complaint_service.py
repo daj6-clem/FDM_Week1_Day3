@@ -4,6 +4,8 @@ from data.repositories.complaint_status_history_repository import ComplaintStatu
 from src.models.models import ComplaintStatus, Complaint
 from fastapi import HTTPException
 
+# Note: Added tests
+
 class ComplaintService:
     def __init__(self):
         self.complaint_repo = ComplaintRepository()

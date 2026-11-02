@@ -1,3 +1,5 @@
+Note: Added tests
+
 Each repository/service/router/domain/config-dependencies should not overlap in business roles
 
 Router: HTTP only. 
