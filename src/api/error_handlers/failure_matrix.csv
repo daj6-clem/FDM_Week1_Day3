@@ -1,0 +1,6 @@
+Scenario	Endpoint	Expected Status	Actual Status	Pass/Fail
+Missing Customer	GET	404	404	Pass
+Invalid Status Transition	PATCH	409	409	Pass
+Missing Complaint	GET	404	404	Pass
+Database Unavailable	POST	503	503	Pass
+Unexpected Error	POST	500	500	

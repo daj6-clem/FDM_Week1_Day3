@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Integer
 from sqlalchemy import Enum as SqlEnum
 from enum import Enum
 from sqlalchemy.orm import relationship
+from src.api.error_handlers.error_handlers import InvalidStatusTransitionException
 import datetime
 
 # ENUMS:
@@ -117,7 +118,7 @@ class Complaint (Base):
         allowed = self.VALID_TRANSITIONS[self.status]
 
         if new_status not in allowed:
-            raise ValueError(f"Invalid transition: "
+            raise InvalidStatusTransitionException(f"Invalid transition: "
                              f"{self.status.value} -> {new_status.value}"
                              )
         self.status = new_status
