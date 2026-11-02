@@ -1,3 +1,5 @@
+Everything has now been tested.
+
 CUSTOMER: ID, first name, last name, email, phone, segment, date created
 
 Enums:

@@ -75,6 +75,7 @@ class Account (Base):
     AccountStatus.INACTIVE: [AccountStatus.ACTIVE]
     }
 
+    # Function tested
     def change_status(self, new_status):
         allowed = self.VALID_TRANSITIONS[self.status]
         if new_status not in allowed:
@@ -111,6 +112,7 @@ class Complaint (Base):
         ComplaintStatus.CLOSED: []
     }
 
+    # Function Tested
     def change_status(self, new_status):
         allowed = self.VALID_TRANSITIONS[self.status]
 
