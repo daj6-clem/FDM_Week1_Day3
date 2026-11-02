@@ -8,6 +8,8 @@ service = CustomerService()
 
 router = APIRouter()
 
+#Added testing
+
 @router.get("/customers/{customer_id}")
 def get_by_id(customer_id:str, db:Session = Depends(get_db)):
     customer = service.get_by_id(db, customer_id)

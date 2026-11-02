@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from src.dependencies import get_db
 
+# added testing
+
 router = APIRouter()
 # Request urls go to router which maps it to the below function and returns the given response
 @router.get("/health/live")

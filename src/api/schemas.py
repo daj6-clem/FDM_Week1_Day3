@@ -3,6 +3,8 @@ from datetime import datetime
 from src.models.models import Segment, Channel, Category, Priority, ComplaintStatus
 ##WIP
 
+# Added testing
+
 #This includes everything but the id
 class CustomerCreate(BaseModel):
     first_name:str
