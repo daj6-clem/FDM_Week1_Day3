@@ -4,6 +4,8 @@ import datetime
 
 class ComplaintStatusHistoryRepository:
     def create(self, db:Session, complaint:Complaint, old_status:ComplaintStatus, comments:str | None = None):
+        #raise Exception("simulate history write failure")
+        
         csh = ComplaintStatusHistory(
             complaint_id = complaint.complaint_id,
             old_status = old_status,

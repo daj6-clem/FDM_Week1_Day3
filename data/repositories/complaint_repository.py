@@ -44,8 +44,6 @@ class ComplaintRepository:
         )
 
         db.add(complaint)
-        db.commit()
-        db.refresh(complaint)
 
         return complaint
 

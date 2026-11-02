@@ -30,8 +30,21 @@ class ComplaintService:
             raise ValueError("Cannot create complaint: customer does not exist.")
 
         complaint_id = self.complaint_repo.generate_complaint_id(db)
+
+        try:
+            complaint = self.complaint_repo.create(db, complaint, complaint_id)
+            # Boundary note - Complaint and Initial Status event form one transaction.
+            # Above is the complaint. Below is the initial status event.
+            
+            self.csh_repo.create(db, complaint, None)
         
-        return self.complaint_repo.create(db, complaint, complaint_id)
+            db.commit()
+            db.refresh(complaint)
+
+            return complaint
+        except:
+            db.rollback()
+            raise 
 
     def change_status(self, db, complaint_id: str, status:ComplaintStatus):
         complaint = self.complaint_repo.get_by_id(db, complaint_id)
