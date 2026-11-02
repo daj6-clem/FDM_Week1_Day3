@@ -31,12 +31,6 @@ def test_complaint_get_complaints(client):
     response = client.get("/complaints")
     assert response.status_code == 200
 
-#def test_complaint_get_csh_history_success(client):
-#def test_complaint_get_csh_history_fail(client):
-
-#def test_complaint_get_db_success(client):
-#def test_complaint_get_db_fail(client):
-
 def test_complaint_get_for_customer_success(client):
     response = client.get("/customers/CUS001/complaints")
     assert response.status_code == 200

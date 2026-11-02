@@ -1,0 +1,11 @@
+***RESULTS***
+INITIAL: 30 out of 30 Passed
+
+BRITTLE:
+db.commit.assert_called_once()
+db.rollback.assert_not_called()
+db.rollback.assert_called_once()
+
+These functions are used in the escalation boundary tests. 
+However, they cannot be removed, as they are necessary for the testing of transaction boundaries.
+
