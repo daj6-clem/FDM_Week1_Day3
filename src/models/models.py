@@ -137,7 +137,7 @@ class ComplaintStatusHistory (Base):
 class Employee (Base):
     __tablename__ = "employee"
 
-    employee_id = Column(String, primary_key = True, autoincrement = True)
+    employee_id = Column(String, primary_key = True)
     first_name = Column(String, nullable = False)
     last_name = Column(String, nullable = False)
     email = Column(String, unique = True)
