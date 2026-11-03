@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - master
-      - sprint-2
+      - Sprint-2
   pull_request:
 
 jobs:
