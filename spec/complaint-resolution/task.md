@@ -36,6 +36,8 @@
 
 - Send customer response
 
+- Create complaint and complaint status history in single transaction, rollback on failure
+
 **Frontend Tasks**
 
 - The frontend requests the summarized version of the claim

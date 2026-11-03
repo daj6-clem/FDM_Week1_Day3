@@ -12,6 +12,16 @@
 
 - Audit trail
 
+- Customer
+
+- Complaint Status History
+
+- Error Handling
+
+- Logging
+
+- Correlation-ID Middleware
+
 **Backend** **Strategy**
 
 - Parse information from complaint
@@ -24,6 +34,20 @@
 
 - Update Audit trail
 
+- Standardize API error contract
+
+- Manage complaint lifecycle
+
+- Validate complaint requests
+
+- Persist complaints/customer data
+
+- Correlation IDs through middleware in logs and error responses
+
+- Complaint Status History records to record changes in status
+
+- Suppport triage and RAG integration
+
 **Frontend Strategy**
 
 - A summary of the claim with the AI suggestion of denying/accept.
@@ -34,11 +58,23 @@
 
 **Validation & Testing Strategy**
 
-- Unit tests 
+- Unit tests:
+    - status transition
+    - rollback
+    - validation
+    - repository/service behavior
 
-- Integration tests 
+- Integration tests:
+    - customer 200/404
+    - complaint 201/422
+    - valid status updates
+    - rollback behavior
+    - safe error contract
+    - correlation IDs
 
-- Contract tests
+- Contract tests:
+    - request schema validation
+    - response schema validation
 
 **Risk & Considerations**
 

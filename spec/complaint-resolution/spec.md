@@ -92,6 +92,13 @@
 
 **Core Flows**
 
+- Complaint Status Lifecycle and Valid Transitions:
+1. OPEN -> IN PROGRESS
+2. IN PROGRESS -> UNDER REVIEW
+3. IN PROGRESS -> CLOSED
+4. UNDER REVIEW -> CLOSED
+5. CLOSED -> no further transitions
+
 - The expected behavior:
 
 1. The complaint has been received.
@@ -144,6 +151,10 @@
 
 - A summary requires a complaint id, a customer id, a customer statement, a transaction, additional indicators, requested outcome, and related policy
 
+- Complaint Creation and initial status-history creation must succeed or fail together
+
+- Partial creation prohibited
+
 **Error Conditions** **and Edge Cases**
 
 - Edge cases
@@ -166,6 +177,8 @@
 
 - Missing or invalid ‘request’->400, field=”requestId”
 
+- All API errors return code, message, correlation_id
+
 - 
 
 **NFRs**
@@ -175,6 +188,10 @@
 - The latency is less than 1min for each complaint
 
 - No sensitive information being disclosed to people uninvolved.
+
+- Log: timestamp, level, correlation_id, operation, outcome, duration_ms
+
+- Do not log: passwords, api keys, complete customer records, raw complaint narratives
 
 **High-Level Interface expectation**
 
