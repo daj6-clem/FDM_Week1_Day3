@@ -25,7 +25,12 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pytest pytest-cov
-
+      - name: Debug DB_PATH
+        env:
+          DB_PATH: ${{ secrets.DB_PATH }}
+        run: |
+          echo "Exists: $([[ -n "$DB_PATH" ]] && echo YES || echo NO)"
+          echo "Length: ${#DB_PATH}"
       - name: Run tests and generate coverage
         env:
           DB_PATH: ${{secrets.DB_PATH}}
