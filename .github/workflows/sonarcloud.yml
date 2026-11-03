@@ -27,6 +27,8 @@ jobs:
           pip install pytest pytest-cov
 
       - name: Run tests and generate coverage
+        env:
+          DB_PATH: ${{secrets.DB_PATH}}
         run: |
           pytest --cov=src --cov-report=xml
 
