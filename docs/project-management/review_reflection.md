@@ -1,3 +1,10 @@
+# SONARCLOUD LINK:
+https://sonarcloud.io/project/overview?id=daj6-clem_FDM_Week1_Day3
+
+# Also testing with sonarcloud in github actions
+
+
+
 # Summary: 
 
 # Spec sections implemented:
