@@ -1,0 +1,14 @@
+source_id,title,version,effective_date,document_type,access_label
+KB-001,Enterprise Complaint Management Policy,3,1/1/2026,Policy,Internal
+KB-002,"Escalation, Approval and Decision Authority Standard",2.1,2/15/2026,Policy,Restricted
+KB-003,"Fee, Charge and Interest Complaint Playbook",2,3/1/2026,Playbook,Internal
+KB-004,Digital Banking and Account Access Operations Guide,2,3/20/2026,Guide,Internal
+KB-005,"Customer Service, Communication and Accessibility Standard",2,4/1/2026,Policy,Internal
+KB-006,Mortgage Servicing Complaint Investigation Playbook,2,4/15/2026,Playbook,Internal
+KB-007,Complaint Investigation and Resolution Analyst Playbook,2,5/1/2026,Playbook,Internal
+KB-008,"AI Governance, Information Security and Audit Standard",2,5/15/2026,Policy,Restricted
+KB-009,Complaint Operations Knowledge Articles and FAQ,1,6/1/2026,FAQ,Internal
+KB-010,Historical Complaint Casebook,1,6/15/2026,Casebook,Internal
+BUL-2026-01,Operational Bulletin: Approval Threshold Clarification,1,2/20/2026,Bulletin,Internal
+BUL-2026-02,Operational Bulletin: RAG Source and Citation Controls,1,5/20/2026,Bulletin,Restricted
+KB-001-OLD,Superseded Complaint Handling Policy,1.4,1/1/2024,Policy,Internal
