@@ -4,14 +4,19 @@ from data.repositories.complaint_status_history_repository import ComplaintStatu
 from src.models.models import ComplaintStatus, Complaint
 from fastapi import HTTPException
 from src.api.error_handlers.error_handlers import CustomerNotFoundException, ComplaintNotFoundException, InvalidStatusTransitionException
+from data.repositories.interfaces.complaint_repository_interface import ComplaintRepositoryInterface
+from data.repositories.interfaces.customer_repository_interface import CustomerRepositoryInterface
+from data.repositories.interfaces.account_repository_interface import AccountRepositoryInterface
+from data.repositories.interfaces.complaint_status_history_repository_interface import ComplaintStatusHistoryRepositoryInterface
+
 
 # Note: Added tests
 
 class ComplaintService:
-    def __init__(self):
-        self.complaint_repo = ComplaintRepository()
-        self.customer_repo = CustomerRepository()
-        self.csh_repo = ComplaintStatusHistoryRepository()
+    def __init__(self, complaint_repo: ComplaintRepositoryInterface, customer_repo: CustomerRepositoryInterface, csh_repo:ComplaintStatusHistoryRepositoryInterface):
+        self.complaint_repo = complaint_repo
+        self.customer_repo = customer_repo
+        self.csh_repo = csh_repo
 
     def get_by_id(self, db, complaint_id):
         complaint = self.complaint_repo.get_by_id(db, complaint_id)

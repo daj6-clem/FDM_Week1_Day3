@@ -1,15 +1,19 @@
 #===================================================
 import os
 import time
+import re
 import csv
 import json
 import hashlib
 from dotenv import load_dotenv
 import chromadb
 from docx import Document
+from docx.text.paragraph import Paragraph
+from docx.table import Table
 from google import genai
 from chromadb.utils import embedding_functions
 from collections import Counter
+from src.rag.chunking import fixed_chunking, retrieval_spot_test, smart_chunking, validate_chunks
 
 #==========================================================
 # Load Environment Variables
@@ -158,9 +162,11 @@ def calculate_checksum(content):
 # Extract Normalized Documents
 #==========================================================
 def extract_structured_content(directory_path, validated_docs):
+
     documents = []
 
     for row in validated_docs:
+
         document_id = row["source_id"]
         relative_path = row["relative_path"]
         version = row["version"]
@@ -174,46 +180,62 @@ def extract_structured_content(directory_path, validated_docs):
         current_section = "Introduction"
         current_content = []
 
-        for paragraph in doc.paragraphs:
-            text = paragraph.text.strip()
+        def save_section():
+            if not current_content:
+                return
 
-            if not text:
-                continue
+            content = "\n\n".join(current_content)
 
-            if paragraph.style.name.startswith("Heading"):
-                if current_content:
-                    content = "\n".join(current_content)
-                    documents.append(
-                        {
-                            "document_id": document_id,
-                            "source_file": relative_path,
-                            "section": current_section,
-                            "content": content,
-                            "checksum": calculate_checksum(content),
-                            "version": version,
-                            "effective_date": effective_date,
-                            "status":status
-                        }
+            documents.append({
+                "document_id": document_id,
+                "source_file": relative_path,
+                "section": current_section,
+                "content": content,
+                "checksum": calculate_checksum(content),
+                "version": version,
+                "effective_date": effective_date,
+                "status": status
+            })
+
+        for block in doc.iter_inner_content():
+
+            # Process paragraphs
+            if isinstance(block, Paragraph):
+
+                text = block.text.strip()
+
+                if not text:
+                    continue
+
+                style_name = block.style.name
+
+                # Heading 1 defines a new section
+                if style_name == "Heading 1":
+
+                    save_section()
+
+                    current_section = text
+                    current_content = []
+
+                else:
+                    current_content.append(text)
+
+            # Process tables
+            elif isinstance(block, Table):
+
+                for table_row in block.rows:
+
+                    row_text = [
+                        cell.text.strip()
+                        for cell in table_row.cells
+                    ]
+
+                    current_content.append(
+                        " | ".join(row_text)
                     )
 
-                current_section = text
-                current_content = []
-            else:
-                current_content.append(text)
-        if current_content:
-            content = "\n".join(current_content)
-            documents.append(
-                {
-                    "document_id": document_id,
-                    "source_file": relative_path,
-                    "section": current_section,
-                    "content": content,
-                    "checksum": calculate_checksum(content),
-                    "version": version,
-                    "effective_date": effective_date,
-                    "status":status
-                }
-            )
+        # Save final section
+        save_section()
 
     return documents
 
@@ -237,11 +259,125 @@ def create_documents_jsonl(documents, counts):
         json.dump(counts, file, ensure_ascii = False)
         file.write("\n")
 
+def retriever(question, n_results=8):
+    print("==== Querying Chroma ====")
+
+    results = collection.query(
+        query_texts=[question],
+        n_results=n_results,
+        include=["documents", "metadatas"]
+    )
+
+    relevant_chunks = []
+
+    for documents, metadatas in zip(
+            results["documents"],
+            results["metadatas"]
+        ):
+
+            for content, metadata in zip(documents, metadatas):
+
+                relevant_chunks.append({
+                    "document_id": metadata["document_id"],
+                    "section": metadata["section"],
+                    "source_file": metadata["source_file"],
+                    "content": content
+                })
+
+    return relevant_chunks
+
+def generate_response(
+    question,
+    relevant_chunks,
+):
+    context = "\n\n".join(chunk["content"] for chunk in relevant_chunks)
+
+    prompt = f"""
+You are a helpful assistant.
+
+Use the supplied context to answer the question.
+
+If the answer is not found in the context, say you don't know.
+
+Keep the answer concise.
+
+Context:
+{context}
+
+Question:
+{question}
+"""
+
+    max_attempts = 3
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.5-flash-lite",
+                contents=prompt
+            )
+
+            return response.text
+
+        except Exception as exc:
+            error_text = str(exc)
+
+            is_retryable = (
+                "503" in error_text
+                or "UNAVAILABLE" in error_text
+                or "high demand" in error_text.lower()
+            )
+
+            if not is_retryable or attempt == max_attempts:
+                return (
+                    "I could not generate an answer right now because "
+                    "the Gemini API is temporarily unavailable. "
+                    "Please try again in a few moments.\n\n"
+                    f"Technical details: {exc}"
+                )
+
+            wait_seconds = 2 ** attempt
+
+            print(
+                f"Gemini temporarily unavailable "
+                f"(attempt {attempt}/{max_attempts}). "
+                f"Retrying in {wait_seconds}s..."
+            )
+
+            time.sleep(wait_seconds)
+
+
+def load_chunks_into_chroma(chunks):
+
+    all_ids = collection.get()["ids"]
+
+    if all_ids:
+        collection.delete(ids=all_ids)
+
+    collection.upsert(
+        ids=[doc["chunk_id"] for doc in chunks],
+        documents=[doc["content"] for doc in chunks],
+        metadatas=[
+            {
+                "document_id": doc["document_id"],
+                "source_file": doc["source_file"],
+                "section": doc["section"],
+                "checksum": doc["checksum"],
+                "version": doc["version"],
+                "effective_date": doc["effective_date"],
+                "status": doc["status"]
+            }
+            for doc in chunks
+        ]
+    )
 
 def main():
+
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    PROJ_ROOT = os.path.dirname(os.path.dirname(BASE_DIR))
+    PROJ_ROOT = os.path.dirname(
+        os.path.dirname(BASE_DIR)
+    )
 
     directory_path = os.path.join(
         PROJ_ROOT,
@@ -250,9 +386,148 @@ def main():
         "rag_docs"
     )
 
-    manifests, counts = load_manifest(directory_path)
-    docs = extract_structured_content(directory_path, manifests)
-    create_documents_jsonl(docs, counts)
+    manifests, counts = load_manifest(
+        directory_path
+    )
+
+    docs = extract_structured_content(
+        directory_path,
+        manifests
+    )
+
+    print("\n===== EXTRACTED SECTIONS =====")
+
+    for doc in docs:
+
+        print(
+            doc["document_id"],
+            "|",
+            doc["section"]
+        )
+
+    fixed_chunks = []
+    smart_chunks = []
+
+    for doc in docs:
+
+        fixed_chunks.extend(
+            fixed_chunking(
+                doc["content"],
+                metadata=doc
+            )
+        )
+
+        smart_chunks.extend(
+            smart_chunking(
+                doc["content"],
+                max_chunk_size=500,
+                metadata=doc
+            )
+        )
+
+    print("\n===== CHUNK STATISTICS =====")
+
+    print(
+        f"Fixed chunk count: "
+        f"{len(fixed_chunks)}"
+    )
+
+    print(
+        f"Smart chunk count: "
+        f"{len(smart_chunks)}"
+    )
+
+    validate_chunks(fixed_chunks)
+    validate_chunks(smart_chunks)
+
+    with open(
+        os.path.join(
+            PROJ_ROOT,
+            "tests",
+            "chunking_experiment_cases.json"
+        ),
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        test_cases = json.load(file)
+
+    # =====================================
+    # Fixed Chunking Test
+    # =====================================
+
+    print("\n=================================")
+    print("TESTING FIXED CHUNKING")
+    print("=================================")
+
+    load_chunks_into_chroma(
+        fixed_chunks
+    )
+
+    fixed_results = retrieval_spot_test(
+        retriever,
+        test_cases
+    )
+
+    fixed_passes = sum(
+        result["passed"]
+        for result in fixed_results
+    )
+
+    print(
+        f"\nFixed Chunking Score: "
+        f"{fixed_passes}/{len(fixed_results)}"
+    )
+
+    # =====================================
+    # Smart Chunking Test
+    # =====================================
+
+    print("\n=================================")
+    print("TESTING SMART CHUNKING")
+    print("=================================")
+
+    load_chunks_into_chroma(
+        smart_chunks
+    )
+
+    smart_results = retrieval_spot_test(
+        retriever,
+        test_cases
+    )
+
+    smart_passes = sum(
+        result["passed"]
+        for result in smart_results
+    )
+
+    print(
+        f"\nSmart Chunking Score: "
+        f"{smart_passes}/{len(smart_results)}"
+    )
+
+    # =====================================
+    # Comparison
+    # =====================================
+
+    print("\n=================================")
+    print("FINAL COMPARISON")
+    print("=================================")
+
+    print(
+        f"Fixed : "
+        f"{fixed_passes}/{len(fixed_results)}"
+    )
+
+    print(
+        f"Smart : "
+        f"{smart_passes}/{len(smart_results)}"
+    )
+
+    all_ids = collection.get()["ids"]
+
+    if all_ids:
+        collection.delete(ids=all_ids)
 
 if __name__ == "__main__":
     main()

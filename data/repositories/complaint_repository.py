@@ -1,7 +1,8 @@
 from src.models.models import Complaint, ComplaintStatus
 from sqlalchemy.orm import Session
+from data.repositories.interfaces.complaint_repository_interface import ComplaintRepositoryInterface
 
-class ComplaintRepository:
+class ComplaintRepository (ComplaintRepositoryInterface):
     def get_by_id(self, db:Session, complaint_id):
         return (db.query(Complaint)
                 .filter(Complaint.complaint_id == complaint_id)
