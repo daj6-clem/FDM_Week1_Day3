@@ -1,0 +1,7 @@
+{
+    "provider": "openai",
+    "model": "text-embedding-3-small",
+    "dimensions": null,
+    "batch_size": 10,
+    "normalize": true
+}

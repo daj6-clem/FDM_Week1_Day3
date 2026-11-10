@@ -4,9 +4,11 @@ import time
 import re
 import csv
 import json
+import argparse
 import hashlib
 from dotenv import load_dotenv
 import chromadb
+from src.rag.vector_store import VectorStoreService
 from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.table import Table
@@ -14,32 +16,7 @@ from google import genai
 from chromadb.utils import embedding_functions
 from collections import Counter
 from src.rag.chunking import fixed_chunking, retrieval_spot_test, smart_chunking, validate_chunks
-
-#==========================================================
-# Load Environment Variables
-#==========================================================
-load_dotenv()
-
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
-#==========================================================
-# Gemini Client
-#==========================================================
-client = genai.Client(api_key=GOOGLE_API_KEY)
-
-#==========================================================
-# ChromaDB Setup
-#==========================================================
-chroma_client = chromadb.PersistentClient(
-    path="chroma_persistent_storage"
-)
-
-hf_ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
-
-collection = chroma_client.get_or_create_collection(
-    name="document_qa_collection",
-    embedding_function=hf_ef
-)
+from src.rag.embedding_service import EmbeddingService
 
 #==========================================================
 # Manifest Validation
@@ -371,7 +348,33 @@ def load_chunks_into_chroma(chunks):
         ]
     )
 
-def main():
+def chunkingTest():
+
+    #==========================================================
+    # Load Environment Variables
+    #==========================================================
+    load_dotenv()
+
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+    #==========================================================
+    # Gemini Client
+    #==========================================================
+    client = genai.Client(api_key=GOOGLE_API_KEY)
+
+    #==========================================================
+    # ChromaDB Setup
+    #==========================================================
+    chroma_client = chromadb.PersistentClient(
+        path="chroma_persistent_storage"
+    )
+
+    hf_ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+
+    collection = chroma_client.get_or_create_collection(
+        name="document_qa_collection",
+        embedding_function=hf_ef
+    )
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -528,6 +531,173 @@ def main():
 
     if all_ids:
         collection.delete(ids=all_ids)
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="Rebuild the entire vector index"
+    )
+
+    return parser.parse_args()
+
+def main():
+    args = parse_args()
+
+    load_dotenv(override=True)
+
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    PROJ_ROOT = os.path.dirname(
+        os.path.dirname(BASE_DIR)
+    )
+
+    directory_path = os.path.join(
+        PROJ_ROOT,
+        "docs",
+        "design",
+        "rag_docs"
+    )
+
+    manifests, counts = load_manifest(
+        directory_path
+    )
+
+    docs = extract_structured_content(
+        directory_path,
+        manifests
+    )
+
+    print("\n===== EXTRACTED SECTIONS =====")
+
+    for doc in docs:
+
+        print(
+            doc["document_id"],
+            "|",
+            doc["section"]
+        )
+
+    smart_chunks = []
+
+    for doc in docs:
+
+        smart_chunks.extend(
+            smart_chunking(
+                doc["content"],
+                max_chunk_size=500,
+                metadata=doc
+            )
+        )
+
+    print("\n===== CHUNK STATISTICS =====")
+
+    print(
+        f"Smart chunk count: "
+        f"{len(smart_chunks)}"
+    )
+
+    validate_chunks(smart_chunks)
+
+    # =====================================
+    # Embedding Stage
+    # =====================================
+    embedding_service = EmbeddingService(
+        config_path=os.path.join(
+            BASE_DIR,
+            "embedding_config.json"
+        ),
+        api_key=OPENAI_API_KEY
+    )
+
+    embedded_chunks = (
+        embedding_service.embed_chunks(
+            smart_chunks
+        )
+    )
+
+    print(
+        f"\nEmbedded "
+        f"{len(embedded_chunks)} chunks"
+    )
+
+    expected_ids = {
+        chunk["chunk_id"]
+        for chunk in smart_chunks
+    }
+
+    embedded_ids = {
+        chunk["chunk_id"]
+        for chunk in embedded_chunks
+    }
+
+    missing_ids = expected_ids - embedded_ids
+
+    print("\n===== EMBEDDING VALIDATION =====")
+
+    print(f"Expected chunks: {len(expected_ids)}")
+    print(f"Embedded chunks: {len(embedded_ids)}")
+    print(f"Missing chunks: {len(missing_ids)}")
+
+    if missing_ids:
+        print("Missing chunk IDs:", missing_ids)
+
+    # ============================
+    # Vector Store Stage
+    # ============================
+
+    vector_store = VectorStoreService(
+        persist_directory=os.path.join(
+            PROJ_ROOT,
+            "vector_db",
+            "chroma"
+        ),
+        collection_name="document_chunks"
+    )
+
+    if args.rebuild:
+        if len(embedded_chunks) != len(smart_chunks):
+            raise RuntimeError(
+                "Full rebuild aborted:"
+                "Not all chunks were successfully embedded."
+            )
+        vector_store.rebuild()
+
+    vector_store.persist(embedded_records=embedded_chunks, batch_size = 500)
+
+    print(
+        f"\nTotal vectors in database:"
+        f"{vector_store.get_collection_count()}"
+    )
+
+    print("\n================= INGESTION COMPLETE ==================")
+
+    # =================================
+    # Vector Index Validation
+    # =================================
+
+    validation_report = vector_store.validate_index(
+        expected_chunks=smart_chunks,
+        output_path=os.path.join(
+            PROJ_ROOT,
+            "data",
+            "processed",
+            "vector_index_validation.json"
+        ),
+        expected_dimensions=1536
+    )
+
+    if validation_report["status"] != "PASS":
+
+        raise RuntimeError(
+            "Vector index validation failed."
+        )
+
+    print("\n===== VECTOR INDEX VALIDATION PASSED =====")
 
 if __name__ == "__main__":
     main()
