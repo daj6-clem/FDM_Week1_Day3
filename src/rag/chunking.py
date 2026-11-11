@@ -141,6 +141,8 @@ def smart_chunking(text, max_chunk_size, metadata = None):
             {
                 "chunk_id": f"{metadata['document_id']}_{metadata['section']}_chunk_{i:03d}",
                 "document_id": metadata["document_id"],
+                "title": metadata["title"],
+                "document_type": metadata["document_type"],
                 "source_file": metadata["source_file"],
                 "section": metadata["section"],
                 "content": (f"{metadata['section']}\n\n" 
@@ -149,6 +151,7 @@ def smart_chunking(text, max_chunk_size, metadata = None):
                 "checksum": metadata["checksum"],
                 "version": metadata["version"],
                 "effective_date": metadata["effective_date"],
+                "access_label": metadata["access_label"],
                 "status": metadata["status"]
             }
         )

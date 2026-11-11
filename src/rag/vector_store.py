@@ -3,15 +3,19 @@ import logging
 import chromadb
 import json
 
+
 class VectorStoreService:
 
     approved_metadata = {
         "document_id",
+        "title",
+        "document_type",
         "source_file",
         "section",
         "checksum",
         "version",
         "effective_date",
+        "access_label",
         "status"
     }
 
@@ -101,20 +105,15 @@ class VectorStoreService:
     def validate_index(self, expected_chunks, expected_dimensions=1536, batch_size=500, output_path="data/processed/vector_index_validation.json"):
         logging.info("Starting vector index validation.")
 
-        # Expected chunk count
-
         chunk_ids = [chunk["chunk_id"] for chunk in expected_chunks]
 
         chunk_count = len(chunk_ids)
 
         duplicate_chunk_ids = (len(chunk_ids) != len(set(chunk_ids)))
 
-        # Vector Count
         vector_count = self.collection.count()
         logging.info(f"Chunk count: {chunk_count}")
         logging.info(f"Vector count: {vector_count}")
-
-        # Initialize validation counters
 
         dimension_errors = 0
         missing_metadata = 0
@@ -124,7 +123,6 @@ class VectorStoreService:
             "source_file"
         }
 
-        # Read Stored vectors in batches
         offset = 0
 
         while offset < vector_count:
@@ -144,14 +142,10 @@ class VectorStoreService:
             for i, chunk_id in enumerate(ids):
                 stored_ids.append(chunk_id)
 
-                # check vector dimensions
-
                 vector = embeddings[i]
 
                 if (vector is None or len(vector) != expected_dimensions):
                     dimension_errors += 1
-
-                # check metadata
 
                 metadata = metadatas[i] or {}
 
@@ -160,7 +154,6 @@ class VectorStoreService:
                     if not metadata.get(key)
                 }
 
-                # chunk_id is stored as the ChromaDB ID
                 if not chunk_id:
                     missing_fields.add("chunk_id")
 

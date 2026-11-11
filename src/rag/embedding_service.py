@@ -21,7 +21,7 @@ class EmbeddingService:
         self.model = self.config["model"]
         self.batch_size = self.config["batch_size"]
         self.normalize = self.config["normalize"]
-        self.dimensions = self.config["dimensions"]
+        self.dimensions = self.config["dimensions"] or 1536
 
         logging.basicConfig(
             level = logging.INFO,
@@ -86,12 +86,15 @@ class EmbeddingService:
                                 "chunk_id":chunk["chunk_id"],
                                 "embedding":embedding.embedding,
                                 "document_id":chunk["document_id"],
+                                "title":chunk["title"],
+                                "document_type":chunk["document_type"],
                                 "source_file":chunk["source_file"],
                                 "section":chunk["section"],
                                 "content":chunk["content"],
                                 "checksum":chunk["checksum"],
                                 "version":chunk["version"],
                                 "effective_date":chunk["effective_date"],
+                                "access_label": chunk["access_label"],
                                 "status":chunk["status"]
                             }
                         )
@@ -118,3 +121,27 @@ class EmbeddingService:
         logging.info(f"Embedded {len(embedded_records)} chunks")
 
         return embedded_records
+
+    def embed_query(self, query):
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError("Query must be a non-empty string.")
+
+        try:
+            response = self.client.embeddings.create(
+                model = self.model,
+                input = query,
+                dimensions = self.dimensions
+            )
+
+            embedding = response.data[0].embedding
+
+            if len(embedding) != self.dimensions:
+                raise ValueError(f"Unexpected embedding dimensions."
+                                 f"Expected {self.dimensions}, "
+                                 f"received {len(embedding)}")
+
+            return embedding
+
+        except Exception:
+            logging.exception("Failed to embed query.")
+            raise

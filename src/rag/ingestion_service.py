@@ -9,6 +9,7 @@ import hashlib
 from dotenv import load_dotenv
 import chromadb
 from src.rag.vector_store import VectorStoreService
+from src.rag.retrieval_service import RetrievalService
 from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.table import Table
@@ -145,9 +146,12 @@ def extract_structured_content(directory_path, validated_docs):
     for row in validated_docs:
 
         document_id = row["source_id"]
+        title = row["title"]
+        document_type = row["document_type"]
         relative_path = row["relative_path"]
         version = row["version"]
         effective_date = row["effective_date"]
+        access_label = row["access_label"]
         status = row["status"]
 
         file_path = os.path.join(directory_path, relative_path)
@@ -165,12 +169,15 @@ def extract_structured_content(directory_path, validated_docs):
 
             documents.append({
                 "document_id": document_id,
+                "title": title,
+                "document_type": document_type,
                 "source_file": relative_path,
                 "section": current_section,
                 "content": content,
                 "checksum": calculate_checksum(content),
                 "version": version,
                 "effective_date": effective_date,
+                "access_label": access_label,
                 "status": status
             })
 
@@ -698,6 +705,29 @@ def main():
         )
 
     print("\n===== VECTOR INDEX VALIDATION PASSED =====")
+
+    # ==================================
+    # RETRIEVAL SERVICE
+    # ==================================
+
+    retrieval_service = RetrievalService(
+        vector_store = vector_store,
+        embedding_service = embedding_service
+    )
+
+    results = retrieval_service.retrieve(
+        query="Should dates be reset to disguise age?",
+        top_k = 5,
+        document_type = "Policy",
+        version = "2.0",
+        access_label = "Internal",
+        rerank = True
+    )
+
+    for result in results:
+        print("Original score:", result["score"],
+              "Rerank score:", result["rerank_score"])
+        print(result["text"])
 
 if __name__ == "__main__":
     main()
