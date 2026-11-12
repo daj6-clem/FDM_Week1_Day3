@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "required": [
+    "answer",
+    "supported",
+    "citations",
+    "limitations"
+  ],
+  "properties": {
+    "answer": {
+      "type": "string"
+    },
+    "supported": {
+      "type": "boolean"
+    },
+    "citations": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    }
+  }
+}

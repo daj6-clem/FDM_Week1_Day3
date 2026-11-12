@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from src.models.models import Segment, Channel, Category, Priority, ComplaintStatus
 ##WIP
@@ -55,3 +55,9 @@ class ComplaintStatusHistoryCreate(BaseModel):
     changed_by:str | None
     changed_at:datetime | None
     comments:str | None
+
+class PolicyQuery(BaseModel):
+    question: str
+    document_type: str | None = None
+    version: str | None = None
+    access_label: str | None = None

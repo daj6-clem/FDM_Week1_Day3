@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from src.api.routers.complaints import router as complaints_router
 from src.api.routers.customers import router as customer_router
 from src.api.routers.health import router as health_router
+from src.api.routers.policy import router as policy_router
 from data.connection import engine
 from data.base import Base
 from uuid import uuid4
@@ -14,6 +15,7 @@ Base.metadata.create_all(bind=engine) #creates all tables before running applica
 app = FastAPI() # Get an instance of FastAPI
 app.include_router(customer_router)
 app.include_router(complaints_router)
+app.include_router(policy_router)
 app.include_router(health_router) # Adds all the routers to the instance (The endpoints in the router files)
 app.add_exception_handler(CustomerNotFoundException, customer_not_found)
 app.add_exception_handler(ComplaintNotFoundException, complaint_not_found)

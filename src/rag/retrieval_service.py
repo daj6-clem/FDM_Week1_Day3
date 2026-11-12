@@ -86,19 +86,21 @@ class RetrievalService:
                 ]
             )
 
+            ids = results["ids"][0]
             documents = results["documents"][0]
             distances = results["distances"][0]
             metadatas = results["metadatas"][0]
 
             retrieved_chunks = []
 
-            for document, distance, metadata in zip(documents, distances, metadatas):
+            for chunk_id, document, distance, metadata in zip(ids, documents, distances, metadatas):
                 if document is None or distance is None:
                     continue
 
                 score = 1.0 - float(distance)
 
                 retrieved_chunks.append({
+                     "chunk_id": chunk_id,
                     "text": document,
                     "score": score,
                     "metadata": metadata or {}
