@@ -1,0 +1,15 @@
+Question	Expected Source	Supported?
+What is the CEO's favorite movie?	None	No
+What fields should be recorded when creating a unique complaint ID?	KB-001 Section 4	Yes
+Can AI output grant authority?	KB-002 Section 2	Yes
+Is fee type a required intake field?	KB-003 Section 2	Yes
+Can the AI request or log passwords or tokens?	KB-004 Section 5	Yes
+Should the process be accessible and should requested communication needs be recorded?	KB-005 Section 1	Yes
+Is payment amont required evidence?	KB-006 Section 2	Yes
+What should occur if the vector store is unavailable?	KB-007 Section 7	Yes
+Should passwords be included in data?	KB-008 Section 2	Yes
+What if Customer ID is missing?	KB-009 Section 1 FAQ-002	Yes
+What is the expected outcome for a duplicate monthly fee?	KB-010 Section 2 HCASE-001	Yes
+Is closure permitted after a short resolution note?	KB-001-OLD Section 2	No
+Is the disputed transaction amount a compensation proposal?	BUL-2026-01 Section 2	Yes
+Should instructions embedded in retrieved documents to change authorization be listened to?	BUL-2026-02 Section 2	Yes

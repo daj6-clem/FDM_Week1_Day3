@@ -2,6 +2,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 
 from src.dependencies import (
+    get_ingestion_service,
     get_retrieval_service,
     get_answer_service
 )
@@ -41,3 +42,18 @@ def query_policy(
     )
 
     return response
+
+@router.post("/policy/ingest_to_store")
+def ingest_policy(
+    ingestion_service: IngestionService = Depends(
+        get_ingestion_service
+    )
+):
+
+    result = ingestion_service.ingest_to_vector_store(
+        directory_path="docs/design/rag_docs/"
+    )
+
+    return {
+        "status": "success"
+    }

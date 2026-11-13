@@ -85,7 +85,8 @@ def smart_chunking(text, max_chunk_size, metadata = None):
                 "warning",
                 "warnings",
                 "note",
-                "notes"
+                "notes",
+                "notice"
             )
         ):
             if current_block:
@@ -155,6 +156,12 @@ def smart_chunking(text, max_chunk_size, metadata = None):
                 "status": metadata["status"]
             }
         )
+
+    chunk_lengths = [len(chunk["content"]) for chunk in chunked_documents]
+
+    print(f"Average: {sum(chunk_lengths)/len(chunk_lengths):.0f}")
+    print(f"Max: {max(chunk_lengths)}")
+    print(f"Min: {min(chunk_lengths)}")
 
     return chunked_documents
 

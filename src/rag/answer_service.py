@@ -29,7 +29,7 @@ class AnswerService:
             "limitations": []
         }
         """
-    def __init__(self, client: OpenAI, model: str, citation_formatter: CitationFormatter, min_retrieval_score: float = 0.65,):
+    def __init__(self, client: OpenAI, model: str, citation_formatter: CitationFormatter, min_retrieval_score: float = 0.50,):
         self.client = client
         self.model = model
         self.min_retrieval_score = min_retrieval_score

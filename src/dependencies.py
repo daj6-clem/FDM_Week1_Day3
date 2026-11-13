@@ -19,6 +19,7 @@ from src.services.complaint_service import ComplaintService
 from src.services.customer_service import CustomerService
 from src.services.account_service import AccountService
 
+from src.rag.ingestion_service import IngestionService
 from src.rag.embedding_service import EmbeddingService
 from src.rag.vector_store import VectorStoreService
 from src.rag.retrieval_service import RetrievalService
@@ -74,6 +75,11 @@ def get_vector_store():
         persist_directory=PROJECT_ROOT / "vector_db" / "chroma",
         collection_name="document_chunks"
     )
+
+@lru_cache
+def get_ingestion_service():
+    return IngestionService(embedding_service = get_embedding_service(),
+                            vector_store = get_vector_store())
 
 @lru_cache
 def get_retrieval_service():

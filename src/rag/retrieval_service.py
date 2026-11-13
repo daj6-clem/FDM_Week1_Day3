@@ -75,6 +75,7 @@ class RetrievalService:
             if len(question_embedding) != self.embedding_service.dimensions:
                 raise RetrievalError("Unexpected query embedding dimensions.")
 
+            # explicitly define cos
             results = self.collection.query(
                 query_embeddings = [question_embedding], 
                 n_results = top_k,
