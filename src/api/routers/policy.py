@@ -10,6 +10,7 @@ from src.dependencies import (
 from src.api.schemas import PolicyQuery
 from src.rag.retrieval_service import RetrievalService
 from src.rag.answer_service import AnswerService
+from src.rag.ingestion_service import IngestionService
 
 router = APIRouter()
 
@@ -36,6 +37,7 @@ def query_policy(
         print(chunk["chunk_id"],
               chunk["score"])
 
+    print("GENERATING ANSWER")
     response = answer_service.generate_answer(
         question=request.question,
         chunks=chunks
@@ -50,10 +52,18 @@ def ingest_policy(
     )
 ):
 
-    result = ingestion_service.ingest_to_vector_store(
+    ingestion_service.ingest_to_vector_store(
         directory_path="docs/design/rag_docs/"
     )
 
     return {
         "status": "success"
     }
+
+@router.post("/policy/rebuild")
+def rebuild_policy_index(
+    ingestion_service: IngestionService = Depends(get_ingestion_service)
+):
+    return ingestion_service.rebuild_vector_store(
+        directory_path="docs/design/rag_docs"
+    )

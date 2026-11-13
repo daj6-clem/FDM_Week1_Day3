@@ -12,8 +12,8 @@ class EmbeddingService:
     # create an example log, i.e.
     # "Loaded 120 chunks", "Batch 1 processed, Batch 2 processed..."
 
-    def __init__(self, config_path, api_key):
-        self.client = OpenAI(api_key=api_key)
+    def __init__(self, config_path, client):
+        self.client = client
 
         with open(config_path, "r", encoding = "utf-8") as file:
             self.config = json.load(file)
@@ -21,7 +21,7 @@ class EmbeddingService:
         self.model = self.config["model"]
         self.batch_size = self.config["batch_size"]
         self.normalize = self.config["normalize"]
-        self.dimensions = self.config["dimensions"] or 1536
+        self.dimensions = self.config["dimensions"] or 1024
 
         logging.basicConfig(
             level = logging.INFO,

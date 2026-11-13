@@ -15,13 +15,18 @@ class AnswerService:
         If evidence is insufficient:
         - do not guess
         - return supported=false
+
+        Respond ONLY with vaild JSON
+        Do not include markdown.
+        Do not include explanations.
+        Do not include text before or after the JSON.
         
         Always provide:
         - answer
         - citations
         - limitations
         
-        Return ONLY valid JSON:
+        Required schema:
         {
             "answer": "string",
             "supported": true,
@@ -29,7 +34,7 @@ class AnswerService:
             "limitations": []
         }
         """
-    def __init__(self, client: OpenAI, model: str, citation_formatter: CitationFormatter, min_retrieval_score: float = 0.50,):
+    def __init__(self, client:OpenAI, model: str, citation_formatter: CitationFormatter, min_retrieval_score: float = 0.50,):
         self.client = client
         self.model = model
         self.min_retrieval_score = min_retrieval_score
@@ -67,6 +72,7 @@ class AnswerService:
                 return self.abstain("No sufficiently relevant evidence was retrieved.")
 
             user_prompt = self.build_user_prompt(question, chunks,)
+
             response = self.client.chat.completions.create(
                  model = self.model,
                  messages=[

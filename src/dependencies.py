@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from functools import lru_cache
 from dotenv import load_dotenv
-from src.config import DB_PATH, OPENAI_API_KEY, BASE_DIR, PROJECT_ROOT
+from src.config import DB_PATH, BASE_URL, OPENAI_API_KEY, BASE_DIR, PROJECT_ROOT
 from openai import OpenAI
 
 from data.connection import SessionLocal
@@ -57,6 +57,7 @@ def get_account_service():
 def get_openai_client():
 
     return OpenAI(
+        base_url = BASE_URL,
         api_key=OPENAI_API_KEY
     )
 
@@ -65,7 +66,7 @@ def get_embedding_service():
 
     return EmbeddingService(
         config_path=BASE_DIR / "rag" / "embedding_config.json",
-        api_key=OPENAI_API_KEY
+        client = get_openai_client()
     )
 
 @lru_cache
@@ -99,6 +100,6 @@ def get_answer_service():
 
     return AnswerService(
         client=get_openai_client(),
-        model="gpt-4o-mini",
+        model="qwen2.5:3b",
         citation_formatter=get_citation_formatter()
     )

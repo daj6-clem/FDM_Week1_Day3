@@ -51,7 +51,7 @@ class VectorStoreService:
         logging.warning("Starting full vector index rebuild")
 
         try:
-            self.client.delete_colelction(name = self.collection_name)
+            self.client.delete_collection(name = self.collection_name)
 
         except Exception:
             pass
@@ -102,7 +102,7 @@ class VectorStoreService:
     def get_collection_count(self):
         return self.collection.count()
 
-    def validate_index(self, expected_chunks, expected_dimensions=3072, batch_size=500, output_path="data/processed/vector_index_validation.json"):
+    def validate_index(self, expected_chunks, expected_dimensions=1024, batch_size=500, output_path="data/processed/vector_index_validation.json"):
         logging.info("Starting vector index validation.")
 
         chunk_ids = [chunk["chunk_id"] for chunk in expected_chunks]

@@ -1,7 +1,7 @@
 {
     "provider": "openai",
-    "model": "text-embedding-3-small",
-    "dimensions": 1536,
+    "model": "bge-m3",
+    "dimensions": 1024,
     "batch_size": 10,
     "normalize": true
 }

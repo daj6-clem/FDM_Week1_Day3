@@ -14,6 +14,7 @@ from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.table import Table
 from google import genai
+import logging
 from chromadb.utils import embedding_functions
 from collections import Counter
 from src.rag.chunking import fixed_chunking, retrieval_spot_test, smart_chunking, validate_chunks
@@ -307,3 +308,26 @@ class IngestionService:
         )
 
         return len(chunks)
+
+    def rebuild_vector_store(self, directory_path):
+        logging.info("Starting full vector store rebuild")
+
+        # Drop and recreate collection
+        self.vector_store.rebuild()
+
+        # Re-ingest everything
+        chunks = self.ingest(directory_path)
+
+        embeddings = self.embedding_service.embed_chunks(chunks)
+
+        self.vector_store.persist(embeddings)
+
+        logging.info(
+            f"Rebuild completed. {len(chunks)} chunks indexed."
+        )
+
+        return {
+            "status": "success",
+            "chunks_indexed": len(chunks),
+            "vector_count": self.vector_store.get_collection_count()
+        }
