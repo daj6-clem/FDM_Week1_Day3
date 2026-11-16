@@ -67,7 +67,7 @@ Policy Knowledge Service provides grounded answers to complaint-related question
 - No document failures may crash the service
 - All requests must be logged
 - Policy documents are stored securely
-- New policy documetns can be added without code changes
+- New policy documents can be added without code changes
 - Policy index can be refreshed without downtime
 
 ### API EXPECTATIONS:
