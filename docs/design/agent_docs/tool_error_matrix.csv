@@ -1,0 +1,20 @@
+tool_id,tool_name,error_code,error_condition,agent_action,user_visible,message
+T-001,get_customer,not_found,Customer ID does not exist,Stop workflow,Yes,Customer record not found
+T-002,get_accounts,customer_not_found,Customer ID does not exist,Stop workflow,Yes,Customer not found
+T-002,get_accounts,no_accounts,Customer exists but has no accounts,Continue,Yes,No accounts found for customer
+T-003,get_complaint,not_found,Complaint ID does not exist,Stop workflow,Yes,Complaint not found
+T-004,search_policy,no_results,No matching policy chunks found,Continue with warning,Yes,No policy evidence found
+T-004,search_policy,access_denied,Requested policy exceeds access level,Stop workflow,Yes,Policy access denied
+T-005,create_case_note,complaint_not_found,Complaint ID does not exist,Stop workflow,Yes,Unable to create note
+T-005,create_case_note,invalid_evidence_ref,Referenced evidence does not exist,Stop workflow,Yes,Invalid evidence reference
+T-006,request_approval,complaint_not_found,Complaint ID does not exist,Stop workflow,Yes,Unable to create approval request
+T-006,request_approval,invalid_action,Requested action is not supported,Stop workflow,Yes,Invalid approval action
+T-006,request_approval,missing_evidence,No supporting evidence provided,Stop workflow,Yes,Evidence required before approval
+T-007,record_approval_decision,approval_not_found,Approval request does not exist,Stop workflow,Yes,Approval request not found
+T-007,record_approval_decision,invalid_decision,Decision value is invalid,Stop workflow,Yes,Invalid approval decision
+T-008,update_complaint_status,invalid_status_transition,Transition violates ComplaintStatus business rules,Stop workflow,Yes,Invalid status transition
+T-008,update_complaint_status,complaint_not_found,Complaint ID does not exist,Stop workflow,Yes,Complaint not found
+T-009,close_complaint,approval_required,Required approval has not been recorded,Stop workflow,Yes,Supervisor approval required
+T-009,close_complaint,evidence_missing,Required evidence validation failed,Stop workflow,Yes,Required evidence missing
+T-009,close_complaint,invalid_complaint_status,Complaint is not eligible for closure,Stop workflow,Yes,Complaint cannot be closed in current status
+T-009,close_complaint,complaint_not_found,Complaint ID does not exist,Stop workflow,Yes,Complaint not found

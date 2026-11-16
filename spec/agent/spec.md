@@ -57,6 +57,10 @@ The Agent should coordinate bounded investigation steps, using approved capabili
 - Insufficient information is returned
 - Failure to access SQL or RAG
 - Failure to read in complaint narrative
+- MCP tool timeout
+- Model rate limit
+- Invalid state transition
+- Approval rejected
 
 ### NFRs:
 - Agent will be able to retrieve all present complaing narrative identifiers with 95% accuracy

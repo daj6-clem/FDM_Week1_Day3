@@ -1,0 +1,692 @@
+{
+"$defs": {
+    "Segment": {
+        "type": "string",
+        "enum": [
+            "Retail",
+            "Premier",
+            "Business"
+        ]
+    },
+    "AccountType": {
+        "type": "string",
+        "enum": [
+            "Chequing",
+            "Savings",
+            "Business"
+        ]
+    },
+    "AccountStatus": {
+        "type": "string",
+        "enum": [
+            "Active",
+            "Inactive"
+        ]
+    },
+    "ComplaintStatus": {
+        "type": "string",
+        "enum": [
+            "Open",
+            "In Progress",
+            "Under Review",
+            "Closed"
+        ]
+    },
+    "Channel": {
+        "type": "string",
+        "enum": [
+            "Phone",
+            "Email",
+            "Branch",
+            "Web"
+        ]
+    },
+    "Priority": {
+        "type": "string",
+        "enum": [
+            "Low",
+            "Medium",
+            "High",
+            "Critical"
+        ]
+    },
+    "Category": {
+        "type": "string",
+        "enum": [
+            "Fee Dispute",
+            "Service Delay",
+            "Card Issue",
+            "Customer Service",
+            "Transaction Error",
+            "Online Banking",
+            "Fraud Claim"
+        ]
+    }
+},
+"tools": [
+
+    {
+    "id": "T-001",
+    "name": "get_customer",
+    "purpose": "Retrieve a synthetic customer by customer_id",
+    "allowed_roles": ["Analyst", "Supervisor"],
+    "controls": ["Read-only","BR-004","BR-027"],
+    "input_schema": {
+        "type": "object",
+        "required": ["customer_id"],
+        "properties": {
+            "customer_id": {
+                "type": "string"
+            }
+        }
+    },
+    "output_schema": {
+        "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "customer_id": { "type": "string" },
+                "first_name": { "type": "string" },
+                "last_name": { "type": "string" },
+                "email": {"type": "string"},
+                "phone_number": {"type": ["string", "null"]},
+                "segment": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Segment"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "date_created": {"type": ["string", "null"],
+                                    "format": "date-time"}
+            },
+            "required": [
+                "customer_id",
+                "first_name",
+                "last_name",
+                "email"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+            "error": {
+                "type": "string",
+                "enum": ["not_found"]
+            }
+            },
+            "required": ["error"]
+        }
+        ]
+    }
+    },
+    {
+    "id": "T-002",
+    "name": "get_accounts",
+    "purpose": "List accounts for a verified customer",
+    "allowed_roles": ["Analyst", "Supervisor"],
+    "controls": [
+        "Read-only",
+        "minimize fields"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": ["customer_id"],
+        "properties": {
+        "customer_id": {
+            "type": "string"
+        }
+        }
+    },
+    "output_schema": {
+        "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "account_type": {
+                        "$ref": "#/$defs/AccountType"
+                    },
+                    "status": {
+                        "$ref": "#/$defs/AccountStatus"
+                    },
+                    "current_balance": {
+                        "type": ["number", "null"]
+                    },
+                    "opened_date": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
+        }
+    },
+    {
+    "id": "T-003",
+    "name": "get_complaint",
+    "purpose": "Retrieve complaint and status history",
+    "allowed_roles": ["Analyst", "Supervisor"],
+    "controls": [
+        "Read-only"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": ["complaint_id"],
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        }
+        }
+    },
+    "output_schema": {
+        "type": "object",
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        },
+        "customer_id": {
+            "type": "string"
+        },
+        "account_id": {
+            "type": ["string", "null"]
+        },
+        "channel": {
+            "$ref": "#/$defs/Channel"
+        },
+        "category": {
+            "$ref": "#/$defs/Category"
+        },
+        "complaint_text": {
+            "type": "string"
+        },
+        "priority": {
+            "anyOf": [
+            { "$ref": "#/$defs/Priority" },
+            { "type": "null" }
+            ]
+        },
+        "status": {
+            "$ref": "#/$defs/ComplaintStatus"
+        },
+        "received_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "assigned_analyst_id": {
+            "type": ["string", "null"]
+        },
+        "status_history": {
+            "type": "array",
+            "items": {
+            "type": "object",
+            "properties": {
+                "history_id": {
+                "type": "integer"
+                },
+                "old_status": {
+                "anyOf": [
+                    { "$ref": "#/$defs/ComplaintStatus" },
+                    { "type": "null" }
+                ]
+                },
+                "new_status": {
+                "$ref": "#/$defs/ComplaintStatus"
+                },
+                "changed_by": {
+                "type": ["string", "null"]
+                },
+                "changed_at": {
+                "type": ["string", "null"],
+                "format": "date-time"
+                },
+                "comments": {
+                "type": ["string", "null"]
+                }
+            }
+            }
+        }
+        }
+    }
+    },
+    {
+    "id": "T-004",
+    "name": "search_policy",
+    "purpose": "Retrieve approved policy chunks",
+    "allowed_roles": ["Analyst", "Supervisor"],
+    "controls": [
+        "Current version/access filters"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": ["query", "filters", "top_k"],
+        "properties": {
+        "query": {
+            "type": "string"
+        },
+        "filters": {
+            "type": "object"
+        },
+        "top_k": {
+            "type": "integer",
+            "minimum": 1
+        }
+        }
+    },
+    "output_schema": {
+        "type": "array",
+        "items": {
+        "type": "object",
+        "properties": {
+            "content": {
+            "type": "string"
+            },
+            "score": {
+            "type": "number"
+            },
+            "metadata": {
+            "type": "object",
+            "properties": {
+                "document_id": {
+                "type": "string"
+                },
+                "title": {
+                "type": "string"
+                },
+                "document_type": {
+                "type": "string"
+                },
+                "source_file": {
+                "type": "string"
+                },
+                "section": {
+                "type": ["string", "null"]
+                },
+                "checksum": {
+                "type": "string"
+                },
+                "version": {
+                "type": "string"
+                },
+                "effective_date": {
+                "type": "string",
+                "format": "date"
+                },
+                "access_label": {
+                "type": "string"
+                },
+                "status": {
+                "type": "string"
+                }
+            }
+            }
+        },
+        "required": [
+            "content",
+            "score",
+            "metadata"
+        ]
+        }
+    }
+    },
+    {
+    "id": "T-005",
+    "name": "create_case_note",
+    "purpose": "Add analyst note",
+    "allowed_roles": [
+        "Analyst",
+        "Supervisor"
+    ],
+    "controls": [
+        "Parameterized",
+        "No secrets"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": [
+        "complaint_id",
+        "note",
+        "evidence_refs"
+        ],
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        },
+        "note": {
+            "type": "string"
+        },
+        "evidence_refs": {
+            "type": "array",
+            "items": {
+            "type": "string"
+            }
+        }
+        }
+    },
+    "output_schema": {
+        "type": "object",
+        "properties": {
+        "note_id": {
+            "type": "string"
+        },
+        "audit_event_id": {
+            "type": "string"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time"
+        }
+        },
+        "required": [
+        "note_id",
+        "audit_event_id"
+        ]
+    }
+    },
+    {
+    "id": "T-006",
+    "name": "request_approval",
+    "purpose": "Request approval for current proposed action",
+    "allowed_roles": [
+        "Analyst"
+    ],
+    "controls": [
+        "Case-specific",
+        "BR-029"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": [
+        "complaint_id",
+        "action",
+        "parameters",
+        "evidence_refs"
+        ],
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        },
+        "action": {
+            "type": "string"
+        },
+        "parameters": {
+            "type": "object"
+        },
+        "evidence_refs": {
+            "type": "array",
+            "items": {
+            "type": "string"
+            }
+        }
+        }
+    },
+    "output_schema": {
+        "type": "object",
+        "properties": {
+        "approval_id": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+            "PENDING"
+            ]
+        },
+        "submitted_at": {
+            "type": "string",
+            "format": "date-time"
+        }
+        },
+        "required": [
+        "approval_id",
+        "status"
+        ]
+    }
+    },
+    {
+    "id": "T-007",
+    "name": "record_approval_decision",
+    "purpose": "Approve or reject request",
+    "allowed_roles": [
+        "Supervisor"
+    ],
+    "controls": [
+        "Human only"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": [
+        "approval_id",
+        "decision",
+        "reason"
+        ],
+        "properties": {
+        "approval_id": {
+            "type": "string"
+        },
+        "decision": {
+            "type": "string",
+            "enum": [
+            "APPROVED",
+            "REJECTED",
+            "CHANGES_REQUESTED"
+            ]
+        },
+        "reason": {
+            "type": "string"
+        }
+        }
+    },
+    "output_schema": {
+        "type": "object",
+        "properties": {
+        "approval_id": {
+            "type": "string"
+        },
+        "decision": {
+            "type": "string",
+            "enum": [
+            "APPROVED",
+            "REJECTED",
+            "CHANGES_REQUESTED"
+            ]
+        },
+        "audit_event_id": {
+            "type": "string"
+        },
+        "recorded_at": {
+            "type": "string",
+            "format": "date-time"
+        }
+        },
+        "required": [
+        "approval_id",
+        "decision",
+        "audit_event_id"
+        ]
+    }
+    },
+    {
+    "id": "T-008",
+    "name": "update_complaint_status",
+    "purpose": "Apply allowed status transition",
+    "allowed_roles": [
+        "Authorized role"
+    ],
+    "controls": [
+        "Transition validation"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": [
+        "complaint_id",
+        "target_status",
+        "reason"
+        ],
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        },
+        "target_status": {
+            "$ref": "#/$defs/ComplaintStatus"
+        },
+        "reason": {
+            "type": "string"
+        }
+        }
+    },
+    "output_schema": {
+        "type": "object",
+        "required": [
+        "complaint_id",
+        "previous_status",
+        "new_status",
+        "audit_event_id",
+        "updated_at"
+        ],
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        },
+        "previous_status": {
+            "$ref": "#/$defs/ComplaintStatus"
+        },
+        "new_status": {
+            "$ref": "#/$defs/ComplaintStatus"
+        },
+        "audit_event_id": {
+            "type": "string"
+        },
+        "updated_at": {
+            "type": "string",
+            "format": "date-time"
+        }
+        }
+    },
+    "error_schema": {
+        "type": "object",
+        "required": [
+        "error",
+        "complaint_id",
+        "current_status",
+        "target_status"
+        ],
+        "properties": {
+        "error": {
+            "type": "string",
+            "enum": [
+            "invalid_status_transition"
+            ]
+        },
+        "complaint_id": {
+            "type": "string"
+        },
+        "current_status": {
+            "$ref": "#/$defs/ComplaintStatus"
+        },
+        "target_status": {
+            "$ref": "#/$defs/ComplaintStatus"
+        },
+        "message": {
+            "type": "string"
+        }
+        }
+    }
+    },
+    {
+    "id": "T-009",
+    "name": "close_complaint",
+    "purpose": "Close case after evidence and approval validation",
+    "allowed_roles": [
+        "Supervisor"
+    ],
+    "controls": [
+        "Sensitive",
+        "BR-018",
+        "BR-038"
+    ],
+    "input_schema": {
+        "type": "object",
+        "required": [
+        "complaint_id",
+        "resolution",
+        "communication_date",
+        "evidence_refs"
+        ],
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        },
+        "resolution": {
+            "type": "string"
+        },
+        "communication_date": {
+            "type": "string",
+            "format": "date"
+        },
+        "evidence_refs": {
+            "type": "array",
+            "items": {
+            "type": "string"
+            },
+            "minItems": 1
+        }
+        }
+    },
+    "output_schema": {
+        "type": "object",
+        "required": [
+        "complaint_id",
+        "status",
+        "resolution",
+        "audit_event_id",
+        "closed_at"
+        ],
+        "properties": {
+        "complaint_id": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+            "CLOSED"
+            ]
+        },
+        "resolution": {
+            "type": "string"
+        },
+        "audit_event_id": {
+            "type": "string"
+        },
+        "closed_at": {
+            "type": "string",
+            "format": "date-time"
+        }
+        }
+    },
+    "error_schema": {
+        "type": "object",
+        "required": [
+        "error",
+        "complaint_id"
+        ],
+        "properties": {
+        "error": {
+            "type": "string",
+            "enum": [
+            "approval_required",
+            "evidence_missing",
+            "invalid_complaint_status"
+            ]
+        },
+        "complaint_id": {
+            "type": "string"
+        },
+        "message": {
+            "type": "string"
+        }
+        }
+    }
+    }
+]}
