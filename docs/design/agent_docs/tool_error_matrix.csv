@@ -1,4 +1,4 @@
-tool_id,tool_name,error_code,error_condition,agent_action,user_visible,message
+tool_id,tool_name,error_name,error_condition,agent_action,user_visible,message
 T-001,get_customer,not_found,Customer ID does not exist,Stop workflow,Yes,Customer record not found
 T-002,get_accounts,customer_not_found,Customer ID does not exist,Stop workflow,Yes,Customer not found
 T-002,get_accounts,no_accounts,Customer exists but has no accounts,Continue,Yes,No accounts found for customer
