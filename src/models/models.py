@@ -5,6 +5,8 @@ from enum import Enum
 from sqlalchemy.orm import relationship
 from src.api.error_handlers.error_handlers import InvalidStatusTransitionException
 import datetime
+import uuid
+from sqlalchemy import JSON
 
 # ENUMS:
 class Segment(Enum):
@@ -47,6 +49,11 @@ class Category(Enum):
     TRANSACTION_ERROR = "Transaction Error"
     ONLINE_BANKING = "Online Banking"
     FRAUD_CLAIM = "Fraud Claim"
+
+class ApprovalStatus(Enum):
+    PENDING = "Pending"
+    APPROVED = "Approved"
+    REJECTED = "Rejected"
 
 
 class Customer (Base):
@@ -99,6 +106,10 @@ class Complaint (Base):
     received_at = Column(DateTime, nullable = False)
     assigned_analyst_id = Column(String, ForeignKey("employee.employee_id"), nullable = True)
 
+
+    notes = relationship("ComplaintNote", back_populates="complaint")
+
+    review_requests = relationship("ReviewRequest", back_populates="complaint")
     VALID_TRANSITIONS = {
         ComplaintStatus.OPEN: [
             ComplaintStatus.IN_PROGRESS
@@ -142,3 +153,91 @@ class Employee (Base):
     last_name = Column(String, nullable = False)
     email = Column(String, unique = True)
     role = Column(String, nullable = False)
+
+class ComplaintNote(Base):
+    __tablename__="complaint_notes"
+
+    note_id = Column(String, primary_key = True, default = lambda:str(uuid.uuid4()))
+    complaint_id = Column(String, ForeignKey("complaint.complaint_id"), nullable = False)
+    note_text = Column(String, nullable = False)
+    evidence_refs = Column(JSON, nullable = True)
+    created_at = Column(DateTime, default = datetime.datetime.utcnow)
+
+    complaint = relationship("Complaint", back_populates="notes")
+
+class ReviewRequest(Base):
+    __tablename__="review_request"
+
+    review_request_id = Column(String, primary_key=True)
+    complaint_id = Column(String, ForeignKey("complaint.complaint_id"), nullable=False)
+    recommendation_id = Column(String, ForeignKey("recommendation.recommendation_id"), nullable = False)
+    reviewer_id = Column(String, ForeignKey("employee.employee_id"), nullable = False)
+    requested_at = Column(DateTime,default=datetime.datetime.utcnow)
+    status = Column(SqlEnum(ApprovalStatus))
+
+    complaint = relationship(
+        "Complaint",
+        back_populates="review_requests"
+    )
+
+    decisions = relationship(
+        "ReviewDecision",
+        back_populates="review_request"
+    )
+
+    VALID_TRANSITIONS = {
+        ApprovalStatus.PENDING: [
+            ApprovalStatus.APPROVED,
+            ApprovalStatus.REJECTED
+        ],
+        ApprovalStatus.APPROVED: [],
+        ApprovalStatus.REJECTED: []
+    }
+
+    # Function Tested
+    def change_status(self, new_status):
+        allowed = self.VALID_TRANSITIONS[self.status]
+
+        if new_status not in allowed:
+            raise InvalidStatusTransitionException(f"Invalid transition: "
+                             f"{self.status.value} -> {new_status.value}"
+                             )
+        self.status = new_status
+
+class ReviewDecision(Base):
+    __tablename__ = "review_decision"
+
+    decision_id = Column(String, primary_key = True)
+    review_request_id = Column(String, ForeignKey("review_request.review_request_id"), nullable = False)
+    decision = Column(String)
+    decision_reason = Column(String)
+    decision_date = Column(DateTime, default = datetime.datetime.utcnow)
+
+    review_request = relationship(
+        "ReviewRequest",
+        back_populates="decisions"
+    )
+
+class AuditLog(Base):
+    __tablename__ = "audit_log"
+
+    audit_id = Column(String,primary_key=True,default=lambda: str(uuid.uuid4()))
+    entity_name = Column(String, nullable=False)
+    entity_id = Column(String, nullable=False)
+    action_type = Column(String, nullable = False)
+    performed_by = Column(String, nullable = True)
+    event_timestamp = Column(DateTime, default = datetime.datetime.utcnow)
+    details = Column(String)
+
+
+
+# Investigation_id should be a foreign key, change this back once you're done with tool implementation
+
+class Recommendation(Base):
+    __tablename__ = "recommendation"
+
+    recommendation_id = Column(String, primary_key = True)
+    investigation_id = Column(String)
+    recommendation_text = Column(String)
+    confidence_score = Column(Float)
+    generated_at = Column(DateTime, default = datetime.datetime.utcnow)
