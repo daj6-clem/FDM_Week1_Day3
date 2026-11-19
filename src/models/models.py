@@ -1,12 +1,11 @@
 from data.base import Base
-from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Integer
+from sqlalchemy import JSON, Numeric, Column, String, Float, DateTime, ForeignKey, Integer
 from sqlalchemy import Enum as SqlEnum
 from enum import Enum
 from sqlalchemy.orm import relationship
 from src.api.error_handlers.error_handlers import InvalidStatusTransitionException
 import datetime
 import uuid
-from sqlalchemy import JSON
 
 # ENUMS:
 class Segment(Enum):
@@ -77,6 +76,9 @@ class Account (Base):
     status = Column(SqlEnum(AccountStatus), nullable = False)
     current_balance = Column(Float, default = 0, nullable = True)
     opened_date = Column(DateTime, nullable = False)
+
+    transactions = relationship("Transaction", back_populates="account")
+    fees = relationship("Fee", back_populates = "account")
 
     VALID_TRANSITIONS = {
     AccountStatus.ACTIVE: [AccountStatus.INACTIVE],
@@ -241,3 +243,39 @@ class Recommendation(Base):
     recommendation_text = Column(String)
     confidence_score = Column(Float)
     generated_at = Column(DateTime, default = datetime.datetime.utcnow)
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    transaction_id = Column(String, primary_key = True)
+    account_id = Column(String, ForeignKey("account.account_id"), nullable = False)
+    transaction_type = Column(String, nullable = False)
+    amount = Column(Numeric(15, 2), nullable = False)
+    processed_at = Column(DateTime, nullable = False)
+    balance_before = Column(Numeric(15, 2))
+    balance_after = Column(Numeric(15, 2))
+    description = Column(String)
+
+    account = relationship(
+        "Account",
+        back_populates = "transactions"
+    )
+
+    fees = relationship(
+        "Fee",
+        back_populates = "transaction"
+    )
+
+class Fee(Base):
+    __tablename__ = "fee"
+
+    fee_id = Column(String, primary_key = True)
+    account_id = Column(String, ForeignKey("account.account_id"), nullable = False)
+    transaction_id = Column(String, ForeignKey("transactions.transaction_id"))
+    fee_type = Column(String, nullable = False)
+    amount = Column(Numeric(10,2), nullable = False)
+    charged_at = Column(DateTime, nullable = False)
+    reversed_flag = Column(Integer, default = 0)
+
+    account = relationship("Account", back_populates = "fees")
+    transaction = relationship("Transaction", back_populates="fees")

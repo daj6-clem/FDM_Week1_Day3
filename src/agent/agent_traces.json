@@ -1,0 +1,1186 @@
+[
+    {
+        "node": "load_complaint",
+        "started_at": "2026-11-19T21:56:50.799879+00:00",
+        "input": {
+            "complaint_id": "CMP-001"
+        },
+        "status": "success",
+        "output": {
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.799962+00:00"
+    },
+    {
+        "node": "classify_issue",
+        "started_at": "2026-11-19T21:56:50.801603+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            }
+        },
+        "status": "success",
+        "output": {
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.801744+00:00"
+    },
+    {
+        "node": "gather_operational_evidence",
+        "started_at": "2026-11-19T21:56:50.803811+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            }
+        },
+        "status": "success",
+        "output": {
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [],
+                "missing_items": [],
+                "contradictions": []
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.804064+00:00"
+    },
+    {
+        "node": "retrieve_policy_evidence",
+        "started_at": "2026-11-19T21:56:50.806173+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [],
+                "missing_items": [],
+                "contradictions": []
+            }
+        },
+        "status": "success",
+        "output": {
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.806277+00:00"
+    },
+    {
+        "node": "validate_evidence",
+        "started_at": "2026-11-19T21:56:50.807767+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            }
+        },
+        "status": "success",
+        "output": {
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.807810+00:00"
+    },
+    {
+        "node": "create_case_summary",
+        "started_at": "2026-11-19T21:56:50.809530+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            }
+        },
+        "status": "success",
+        "output": {
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.809777+00:00"
+    },
+    {
+        "node": "propose_action",
+        "started_at": "2026-11-19T21:56:50.811584+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            }
+        },
+        "status": "success",
+        "output": {
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.811846+00:00"
+    },
+    {
+        "node": "save_recommendation",
+        "started_at": "2026-11-19T21:56:50.813736+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            },
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            }
+        },
+        "status": "success",
+        "output": {
+            "recommendation_id": "REC-001"
+        },
+        "finished_at": "2026-11-19T21:56:50.813866+00:00"
+    },
+    {
+        "node": "request_supervisor_review",
+        "started_at": "2026-11-19T21:56:50.815908+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            },
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-001"
+        },
+        "status": "success",
+        "output": {
+            "approval_request_id": "APR-001"
+        },
+        "finished_at": "2026-11-19T21:56:50.816002+00:00"
+    },
+    {
+        "node": "wait_for_approval",
+        "started_at": "2026-11-19T21:56:50.817419+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            },
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-001",
+            "approval_request_id": "APR-001"
+        },
+        "status": "success",
+        "output": {
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence."
+        },
+        "finished_at": "2026-11-19T21:56:50.817461+00:00"
+    },
+    {
+        "node": "record_supervisor_decision",
+        "started_at": "2026-11-19T21:56:50.818998+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            },
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-001",
+            "approval_request_id": "APR-001",
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence."
+        },
+        "status": "success",
+        "output": {},
+        "finished_at": "2026-11-19T21:56:50.819235+00:00"
+    },
+    {
+        "node": "rework_case",
+        "started_at": "2026-11-19T21:56:50.821057+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            },
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-001",
+            "approval_request_id": "APR-001",
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence."
+        },
+        "status": "success",
+        "output": {
+            "rework_count": 1,
+            "supervisor_feedback": "Provide additional transaction evidence."
+        },
+        "finished_at": "2026-11-19T21:56:50.821098+00:00"
+    },
+    {
+        "node": "create_case_summary",
+        "started_at": "2026-11-19T21:56:50.822501+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "Additional transaction evidence should be reviewed."
+            },
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-001",
+            "approval_request_id": "APR-001",
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence.",
+            "rework_count": 1
+        },
+        "status": "success",
+        "output": {
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee.",
+                    "Additional transaction evidence was reviewed."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "The revised evidence supports a fee reversal."
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.822677+00:00"
+    },
+    {
+        "node": "propose_action",
+        "started_at": "2026-11-19T21:56:50.824194+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee.",
+                    "Additional transaction evidence was reviewed."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "The revised evidence supports a fee reversal."
+            },
+            "proposed_action": {
+                "action": "Review the disputed overdraft fee.",
+                "rationale": "The available evidence requires further review.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-001",
+            "approval_request_id": "APR-001",
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence.",
+            "rework_count": 1
+        },
+        "status": "success",
+        "output": {
+            "proposed_action": {
+                "action": "Reverse the disputed overdraft fee.",
+                "rationale": "The revised evidence supports reversing the fee.",
+                "approval_required": true
+            }
+        },
+        "finished_at": "2026-11-19T21:56:50.824441+00:00"
+    },
+    {
+        "node": "save_recommendation",
+        "started_at": "2026-11-19T21:56:50.826047+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee.",
+                    "Additional transaction evidence was reviewed."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "The revised evidence supports a fee reversal."
+            },
+            "proposed_action": {
+                "action": "Reverse the disputed overdraft fee.",
+                "rationale": "The revised evidence supports reversing the fee.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-001",
+            "approval_request_id": "APR-001",
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence.",
+            "rework_count": 1
+        },
+        "status": "success",
+        "output": {
+            "recommendation_id": "REC-002"
+        },
+        "finished_at": "2026-11-19T21:56:50.826139+00:00"
+    },
+    {
+        "node": "request_supervisor_review",
+        "started_at": "2026-11-19T21:56:50.827826+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee.",
+                    "Additional transaction evidence was reviewed."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "The revised evidence supports a fee reversal."
+            },
+            "proposed_action": {
+                "action": "Reverse the disputed overdraft fee.",
+                "rationale": "The revised evidence supports reversing the fee.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-002",
+            "approval_request_id": "APR-001",
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence.",
+            "rework_count": 1
+        },
+        "status": "success",
+        "output": {
+            "approval_request_id": "APR-002"
+        },
+        "finished_at": "2026-11-19T21:56:50.827912+00:00"
+    },
+    {
+        "node": "wait_for_approval",
+        "started_at": "2026-11-19T21:56:50.829585+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee.",
+                    "Additional transaction evidence was reviewed."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "The revised evidence supports a fee reversal."
+            },
+            "proposed_action": {
+                "action": "Reverse the disputed overdraft fee.",
+                "rationale": "The revised evidence supports reversing the fee.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-002",
+            "approval_request_id": "APR-002",
+            "approval_status": "changes_requested",
+            "supervisor_feedback": "Provide additional transaction evidence.",
+            "rework_count": 1
+        },
+        "status": "success",
+        "output": {
+            "approval_status": "approved",
+            "supervisor_feedback": ""
+        },
+        "finished_at": "2026-11-19T21:56:50.829656+00:00"
+    },
+    {
+        "node": "record_supervisor_decision",
+        "started_at": "2026-11-19T21:56:50.831470+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee.",
+                    "Additional transaction evidence was reviewed."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "The revised evidence supports a fee reversal."
+            },
+            "proposed_action": {
+                "action": "Reverse the disputed overdraft fee.",
+                "rationale": "The revised evidence supports reversing the fee.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-002",
+            "approval_request_id": "APR-002",
+            "approval_status": "approved",
+            "supervisor_feedback": "",
+            "rework_count": 1
+        },
+        "status": "success",
+        "output": {},
+        "finished_at": "2026-11-19T21:56:50.831918+00:00"
+    },
+    {
+        "node": "finalize_case",
+        "started_at": "2026-11-19T21:56:50.834261+00:00",
+        "input": {
+            "complaint_id": "CMP-001",
+            "complaint_data": {
+                "complaint_id": "CMP-001",
+                "customer_id": "CUS-001",
+                "account_id": "ACC-001",
+                "details": "Customer disputes an overdraft fee."
+            },
+            "classification": {
+                "category": "Fee Dispute",
+                "confidence": 0.75
+            },
+            "evidence": {
+                "operational_facts": [
+                    {
+                        "type": "customer",
+                        "data": {
+                            "customer_id": "CUS-001",
+                            "name": "Test Customer"
+                        }
+                    },
+                    {
+                        "type": "accounts",
+                        "data": [
+                            {
+                                "account_id": "ACC-001",
+                                "status": "Active"
+                            }
+                        ]
+                    }
+                ],
+                "policy_chunks": [
+                    {
+                        "chunk_id": "KB-002",
+                        "text": "Fee reversals require supervisor approval."
+                    }
+                ],
+                "missing_items": [],
+                "contradictions": []
+            },
+            "case_summary": {
+                "verified_facts": [
+                    "Customer disputes an overdraft fee.",
+                    "Additional transaction evidence was reviewed."
+                ],
+                "policy_evidence": [
+                    "Fee reversals require supervisor approval."
+                ],
+                "analysis": "The revised evidence supports a fee reversal."
+            },
+            "proposed_action": {
+                "action": "Reverse the disputed overdraft fee.",
+                "rationale": "The revised evidence supports reversing the fee.",
+                "approval_required": true
+            },
+            "recommendation_id": "REC-002",
+            "approval_request_id": "APR-002",
+            "approval_status": "approved",
+            "supervisor_feedback": "",
+            "rework_count": 1
+        },
+        "status": "success",
+        "output": {
+            "final_status": "Closed"
+        },
+        "finished_at": "2026-11-19T21:56:50.834756+00:00"
+    }
+]

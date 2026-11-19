@@ -21,6 +21,8 @@ from data.repositories.recommendation_repository import RecommendationRepository
 from data.repositories.review_decision_repository import ReviewDecisionRepository
 from data.repositories.review_request_repository import ReviewRequestRepository
 from data.repositories.audit_log_repository import AuditLogRepository
+from data.repositories.fee_repository import FeeRepository
+from data.repositories.transaction_repository import TransactionRepository
 from src.models.models import AuditLog, Recommendation, ComplaintNote, ComplaintStatus, ComplaintStatusHistory, Complaint, ReviewDecision, ReviewRequest
 
 ###
@@ -34,7 +36,7 @@ from src.models.models import AuditLog, Recommendation, ComplaintNote, Complaint
 
 class AgentTools:
 
-    def __init__ (self, db:Session, audit_log_repository: AuditLogRepository, complaint_note_repository:ComplaintNoteRepository, recommendation_repository: RecommendationRepository, review_decision_repository:ReviewDecisionRepository, review_request_repository:ReviewRequestRepository, complaint_service: ComplaintService, account_service:AccountService, customer_service:CustomerService, retrieval_service: RetrievalService, answer_service: AnswerService):
+    def __init__ (self, db:Session, audit_log_repository: AuditLogRepository, complaint_note_repository:ComplaintNoteRepository, recommendation_repository: RecommendationRepository, review_decision_repository:ReviewDecisionRepository, review_request_repository:ReviewRequestRepository, complaint_service: ComplaintService, account_service:AccountService, customer_service:CustomerService, retrieval_service: RetrievalService, answer_service: AnswerService, transaction_repository: TransactionRepository, fee_repository: FeeRepository):
         self.complaint_service = complaint_service
         self.account_service = account_service
         self.customer_service = customer_service
@@ -45,6 +47,8 @@ class AgentTools:
         self.review_decision_repository = review_decision_repository
         self.review_request_repository = review_request_repository
         self.audit_log_repository = audit_log_repository
+        self.fee_repository = fee_repository
+        self.transaction_repository = transaction_repository
         self.db = db
 
     def success(self, data):
@@ -81,9 +85,9 @@ class AgentTools:
     # outputs complaint details/history
     # Read only
     # analyst/supervisor
-    def get_complaint(self, customer_id: str):
+    def get_complaint(self, complaint_id: str):
         print("getting complaint")
-        return self.complaint_service.get_for_customer(customer_id)
+        return self.complaint_service.get_by_id(complaint_id)
 
     # outputs ranked evidence with metadata
     # Current version/access filters
@@ -284,4 +288,63 @@ class AgentTools:
             "complaint_id": complaint_id,
             "status": "Closed",
             "audit_id": audit_log.audit_id
+        })
+
+    def get_transactions(self, account_id: str):
+        transactions = self.transaction_service.get_by_account_id(account_id)
+
+        return self.success({
+            "transactions": [
+                {
+                    "transaction_id": t.transaction_id,
+                    "amount": t.amount,
+                    "transaction_date": t.processed_at.isoformat(),
+                    "description": t.description
+                }
+                for t in transactions
+            ]
+        })
+
+    def get_deposits(self, account_id: str):
+        deposits = (
+            self.transaction_service.get_deposits(account_id)
+        )
+
+        return self.success({
+            {
+                "transaction_id": d.transaction_id,
+                "amount": d.amount,
+                "deposit_date": d.processed_at.isoformat()
+            }
+            for d in deposits
+        })
+
+    def get_fee_history(self, account_id: str):
+        fees = (self.fee_service.get_by_account_id(account_id))
+
+        return self.success({
+            "fees": [
+                {
+                    "fee_id": f.fee_id,
+                    "fee_type": f.fee_type,
+                    "amount": float(f.amount),
+                    "charged_at": f.charged_at.isoformat(),
+                    "reversed": bool(f.reversed_flag)
+                }
+                for f in fees
+            ]
+        })
+
+    def create_recommendation(self, investigation_id: str, recommendation_text: str, confidence_score: float):
+        recommendation = Recommendation(
+            recommendation_id = str(uuid.uuid4()),
+            investigation_id = investigation_id,
+            recommendation_text = recommendation_text,
+            confidence_score = confidence_score
+        )
+
+        recommendation = self.recommendation_repository.create(recommendation)
+
+        return self.success({
+            "recommendation_id": recommendation.recommendation_id
         })

@@ -4,6 +4,7 @@ uvicorn src.api.main:app --reload to start app
 fastapi dev filename to start app in dev mode
 
 10-28-2026
+Did pip freeze > requirements.txt
 Can recreate my virtual environment with pip install -r requirements.txt
 
 
